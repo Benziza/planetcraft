@@ -5,9 +5,11 @@ import {
   Cloud,
   Compass,
   Globe2,
+  Minus,
   Moon,
   MousePointer2,
   Move,
+  Plus,
   Rotate3D,
   Sun,
 } from '@lucide/vue';
@@ -17,7 +19,7 @@ import WorldSwitch from './WorldSwitch.vue';
 
 const container = ref<HTMLDivElement | null>(null);
 const homeUrl = import.meta.env.BASE_URL;
-const { ready, error, lighting, night, clouds, rotating, count } =
+const { ready, error, lighting, night, clouds, rotating, count, zoom } =
   useEarth(container);
 </script>
 
@@ -86,6 +88,25 @@ const { ready, error, lighting, night, clouds, rotating, count } =
             ><Moon :size="16" /> Night</RadioGroupItem
           >
         </RadioGroupRoot>
+      </div>
+
+      <div class="world-tools" aria-label="Camera controls">
+        <button
+          :disabled="!ready"
+          aria-label="Zoom in"
+          title="Zoom in"
+          @click="zoom(-1)"
+        >
+          <Plus :size="20" />
+        </button>
+        <button
+          :disabled="!ready"
+          aria-label="Zoom out"
+          title="Zoom out"
+          @click="zoom(1)"
+        >
+          <Minus :size="20" />
+        </button>
       </div>
 
       <div class="orbit-caption">

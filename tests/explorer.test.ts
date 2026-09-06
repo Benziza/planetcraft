@@ -85,6 +85,18 @@ describe('Vue Earth explorer', () => {
     },
   );
 
+  it('enables exploration when the scene is ready and shows its real block count', async () => {
+    const view = await start();
+    expect(view.find('.world-loading').exists()).toBe(false);
+    expect(view.text()).toContain('7,314 BLOCKS');
+    expect(
+      view.get('button[aria-label="Zoom in"]').attributes('disabled'),
+    ).toBeUndefined();
+    expect(api.setNight).toHaveBeenLastCalledWith(false);
+    expect(api.setClouds).toHaveBeenLastCalledWith(true);
+    expect(api.setRotate).toHaveBeenLastCalledWith(true);
+  });
+
   it('updates the scene from the Vue lighting and cloud controls', async () => {
     const view = await start();
     await view.get('[role="radio"][value="night"]').trigger('click');

@@ -297,6 +297,37 @@ a {
   border-color: #a9c89022 !important;
   box-shadow: inset 0 1px 0 #b6e58c0a !important;
 }
+.world-tools {
+  position: absolute;
+  right: 4.3%;
+  top: 45%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #ffffff18;
+  background: #101814cc;
+  border-radius: 4px;
+  padding: 3px;
+}
+.world-tools button {
+  width: 38px;
+  height: 41px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: 0;
+  color: #b9c5b7;
+  border-radius: 2px;
+}
+.world-tools button:hover {
+  background: #b6e58c15;
+  color: #d5efbc;
+}
+.world-tools > span {
+  height: 1px;
+  width: 22px;
+  margin: 2px auto;
+  background: #ffffff13;
+}
 .orbit-caption {
   position: absolute;
   bottom: 109px;

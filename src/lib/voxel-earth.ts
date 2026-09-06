@@ -168,39 +168,65 @@ export async function createEarth(container: HTMLElement, signal: AbortSignal, c
   const orbitMaterial = new THREE.LineDashedMaterial({ color: '#55756e', transparent: true, opacity: .24, dashSize: .07, gapSize: .08 });
   const orbit = new THREE.Line(orbitGeometry, orbitMaterial); orbit.computeLineDistances(); orbit.rotation.z = -.19; scene.add(orbit);
 
+  let targetPosition: THREE.Vector3 | null = null;
   let requestedRotation = true;
   let nightTarget = false;
   let frame = 0;
   let lastTime = performance.now();
   let disposed = false;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function resize() { const width = container.clientWidth, height = container.clientHeight; if (!width || !height) return; camera.aspect = width / height; camera.updateProjectionMatrix(); renderer.setSize(width, height); }
   const observer = new ResizeObserver(resize); observer.observe(container); resize();
   const animate = (time: number) => {
     if (disposed) return;
     const delta = Math.min((time - lastTime) / 1000, .05); lastTime = time;
+    if (targetPosition) {
+      const current = new THREE.Spherical().setFromVector3(camera.position);
+      const target = new THREE.Spherical().setFromVector3(targetPosition);
+      const ease = reducedMotion ? 1 : 1 - Math.exp(-delta * 4.5);
+      const angle = Math.atan2(Math.sin(target.theta - current.theta), Math.cos(target.theta - current.theta));
+      current.theta += angle * ease;
+      current.phi = THREE.MathUtils.lerp(current.phi, target.phi, ease);
+      current.radius = THREE.MathUtils.lerp(current.radius, target.radius, ease);
+      camera.position.setFromSpherical(current);
+      if (camera.position.distanceTo(targetPosition) < .015) { camera.position.copy(targetPosition); targetPosition = null; }
+    }
     const blend = 1 - Math.exp(-delta * 4);
     sun.intensity = THREE.MathUtils.lerp(sun.intensity, nightTarget ? .14 : 3.7, blend);
     fill.intensity = THREE.MathUtils.lerp(fill.intensity, nightTarget ? .52 : 2.35, blend);
     rim.intensity = THREE.MathUtils.lerp(rim.intensity, nightTarget ? 2.8 : 2, blend);
     starMaterial.opacity = THREE.MathUtils.lerp(starMaterial.opacity, nightTarget ? 1 : .65, blend);
-    controls.autoRotate = requestedRotation;
+    controls.autoRotate = requestedRotation && targetPosition === null;
     controls.update(delta);
     renderer.render(scene, camera);
     frame = requestAnimationFrame(animate);
   };
   frame = requestAnimationFrame(animate);
-  const interact = () => { requestedRotation = false; controls.autoRotate = false; callbacks.onInteract(); };
+  const interact = () => { targetPosition = null; requestedRotation = false; controls.autoRotate = false; callbacks.onInteract(); };
   controls.addEventListener('start', interact);
 
+  const zoom = (direction: number) => { targetPosition = camera.position.clone().normalize().multiplyScalar(THREE.MathUtils.clamp(camera.position.length() + direction * 1.1, controls.minDistance, controls.maxDistance)); };
   return {
     blockCount: cells.length + foliage.length + cloudBlocks.length,
     setNight: value => { nightTarget = value; },
     setClouds: value => { clouds.visible = value; },
     setRotate: value => { requestedRotation = value; },
-    focus: () => undefined,
-    reset: () => undefined,
-    zoom: () => undefined,
-    key: () => undefined,
+    focus: (lat, lon) => {
+      requestedRotation = false;
+      controls.autoRotate = false;
+      targetPosition = new THREE.Vector3(Math.cos(lat * radians) * Math.sin(lon * radians), Math.sin(lat * radians), Math.cos(lat * radians) * Math.cos(lon * radians)).multiplyScalar(9.4);
+    },
+    reset: () => { targetPosition = initial.clone(); },
+    zoom,
+    key: key => {
+      if (key === '+' || key === '=') { zoom(-1); return; } if (key === '-') { zoom(1); return; }
+      const spherical = new THREE.Spherical().setFromVector3(camera.position);
+      if (key === 'ArrowLeft') spherical.theta -= .16;
+      if (key === 'ArrowRight') spherical.theta += .16;
+      if (key === 'ArrowUp') spherical.phi = Math.max(.15, spherical.phi - .14);
+      if (key === 'ArrowDown') spherical.phi = Math.min(Math.PI - .15, spherical.phi + .14);
+      targetPosition = new THREE.Vector3().setFromSpherical(spherical);
+    },
     dispose: () => {
       if (disposed) return; disposed = true; cancelAnimationFrame(frame); observer.disconnect();
       controls.removeEventListener('start', interact); controls.dispose();
