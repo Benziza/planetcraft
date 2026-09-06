@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import {
   Box,
+  Cloud,
   Compass,
   Globe2,
   MousePointer2,
@@ -13,7 +14,7 @@ import WorldSwitch from './WorldSwitch.vue';
 
 const container = ref<HTMLDivElement | null>(null);
 const homeUrl = import.meta.env.BASE_URL;
-const { ready, error, rotating, count } = useEarth(container);
+const { ready, error, clouds, rotating, count } = useEarth(container);
 </script>
 
 <template>
@@ -82,6 +83,10 @@ const { ready, error, rotating, count } = useEarth(container);
         <label for="auto-rotate"
           ><Rotate3D :size="17" /><span>Auto-rotate</span
           ><WorldSwitch id="auto-rotate" v-model="rotating" label="Auto-rotate"
+        /></label>
+        <label for="show-clouds"
+          ><Cloud :size="17" /><span>Clouds</span
+          ><WorldSwitch id="show-clouds" v-model="clouds" label="Show clouds"
         /></label>
       </div>
       <div class="world-status">

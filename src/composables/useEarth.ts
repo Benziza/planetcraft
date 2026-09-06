@@ -4,6 +4,7 @@ import type { EarthAPI } from '../lib/voxel-earth';
 export function useEarth(container: Ref<HTMLDivElement | null>) {
   const ready = ref(false);
   const error = ref(false);
+  const clouds = ref(true);
   const rotating = ref(true);
   const count = ref(0);
   // Keep Three.js objects outside deep Vue reactivity.
@@ -12,6 +13,7 @@ export function useEarth(container: Ref<HTMLDivElement | null>) {
   let reducedMotion = false;
   const controller = new AbortController();
 
+  watch(clouds, (value) => api?.setClouds(value));
   watch(rotating, (value) => api?.setRotate(value));
 
   onMounted(async () => {
@@ -34,6 +36,7 @@ export function useEarth(container: Ref<HTMLDivElement | null>) {
       }
       api = current;
       // Settings can change while the scene/data are loading.
+      api.setClouds(clouds.value);
       api.setRotate(rotating.value);
       count.value = current.blockCount;
       ready.value = true;
@@ -49,5 +52,5 @@ export function useEarth(container: Ref<HTMLDivElement | null>) {
     api = null;
   });
 
-  return { ready, error, rotating, count };
+  return { ready, error, clouds, rotating, count };
 }
