@@ -228,6 +228,10 @@ export async function createEarth(container: HTMLElement, signal: AbortSignal, c
   renderer.domElement.addEventListener('pointerdown', down);
   renderer.domElement.addEventListener('pointerup', up);
   renderer.domElement.addEventListener('pointercancel', cancel);
+  const contextLost = (event: Event) => { event.preventDefault(); container.dataset.contextLost = 'true'; };
+  const contextRestored = () => { delete container.dataset.contextLost; lastTime = performance.now(); };
+  renderer.domElement.addEventListener('webglcontextlost', contextLost);
+  renderer.domElement.addEventListener('webglcontextrestored', contextRestored);
 
   const zoom = (direction: number) => { targetPosition = camera.position.clone().normalize().multiplyScalar(THREE.MathUtils.clamp(camera.position.length() + direction * 1.1, controls.minDistance, controls.maxDistance)); };
   return {
@@ -254,8 +258,9 @@ export async function createEarth(container: HTMLElement, signal: AbortSignal, c
     dispose: () => {
       if (disposed) return; disposed = true; cancelAnimationFrame(frame); observer.disconnect();
       controls.removeEventListener('start', interact); controls.dispose();
-      renderer.domElement.removeEventListener('pointerdown', down); renderer.domElement.removeEventListener('pointerup', up);
-      renderer.domElement.removeEventListener('pointercancel', cancel);
+      renderer.domElement.removeEventListener('pointerdown', down); renderer.domElement.removeEventListener('pointerup', up); renderer.domElement.removeEventListener('webglcontextlost', contextLost);
+      renderer.domElement.removeEventListener('pointercancel', cancel); renderer.domElement.removeEventListener('webglcontextrestored', contextRestored);
+      delete container.dataset.contextLost;
       geometry.dispose(); material.dispose(); texture.dispose(); cloudMaterial.dispose(); starGeometry.dispose(); starMaterial.dispose(); orbitGeometry.dispose(); orbitMaterial.dispose(); earth.dispose(); trees.dispose(); clouds.dispose(); renderer.dispose(); renderer.domElement.remove();
     },
   };
