@@ -44,7 +44,19 @@ export function useEarth(container: Ref<HTMLDivElement | null>) {
       const { createEarth } = await import('../lib/voxel-earth');
       if (disposed || !container.value) return;
       const current = await createEarth(container.value, controller.signal, {
-        onSelect: () => undefined,
+        onSelect: (biome, lat, lon) => {
+          if (disposed) return;
+          const item = biomes.find((candidate) => candidate.id === biome)!;
+          active.value = biome;
+          selection.value = {
+            name: `${item.name} biome`,
+            sub: item.text,
+            location: 'BLOCK DISCOVERED',
+            lat,
+            lon,
+          };
+          rotating.value = false;
+        },
         onInteract: () => {
           if (!disposed) rotating.value = false;
         },

@@ -202,8 +202,32 @@ export async function createEarth(container: HTMLElement, signal: AbortSignal, c
     frame = requestAnimationFrame(animate);
   };
   frame = requestAnimationFrame(animate);
+  const pointer = new THREE.Vector2(); const raycaster = new THREE.Raycaster();
+  let startX = 0, startY = 0, downTime = 0;
+  const activePointers = new Set<number>();
+  let multiTouch = false;
+  const down = (event: PointerEvent) => {
+    if (activePointers.size === 0) multiTouch = false;
+    activePointers.add(event.pointerId);
+    if (activePointers.size > 1) multiTouch = true;
+    startX = event.clientX; startY = event.clientY; downTime = performance.now();
+  };
+  const up = (event: PointerEvent) => {
+    activePointers.delete(event.pointerId);
+    if (multiTouch) return;
+    if (Math.hypot(event.clientX - startX, event.clientY - startY) > 5 || performance.now() - downTime > 550) return;
+    const rect = renderer.domElement.getBoundingClientRect();
+    pointer.set((event.clientX - rect.left) / rect.width * 2 - 1, -((event.clientY - rect.top) / rect.height) * 2 + 1);
+    raycaster.setFromCamera(pointer, camera);
+    const hit = raycaster.intersectObject(earth)[0];
+    if (hit?.instanceId !== undefined) { const cell = cells[hit.instanceId]; callbacks.onSelect(cell.biome, cell.lat, cell.lon); requestedRotation = false; controls.autoRotate = false; }
+  };
+  const cancel = (event: PointerEvent) => { activePointers.delete(event.pointerId); multiTouch = true; };
   const interact = () => { targetPosition = null; requestedRotation = false; controls.autoRotate = false; callbacks.onInteract(); };
   controls.addEventListener('start', interact);
+  renderer.domElement.addEventListener('pointerdown', down);
+  renderer.domElement.addEventListener('pointerup', up);
+  renderer.domElement.addEventListener('pointercancel', cancel);
 
   const zoom = (direction: number) => { targetPosition = camera.position.clone().normalize().multiplyScalar(THREE.MathUtils.clamp(camera.position.length() + direction * 1.1, controls.minDistance, controls.maxDistance)); };
   return {
@@ -230,6 +254,8 @@ export async function createEarth(container: HTMLElement, signal: AbortSignal, c
     dispose: () => {
       if (disposed) return; disposed = true; cancelAnimationFrame(frame); observer.disconnect();
       controls.removeEventListener('start', interact); controls.dispose();
+      renderer.domElement.removeEventListener('pointerdown', down); renderer.domElement.removeEventListener('pointerup', up);
+      renderer.domElement.removeEventListener('pointercancel', cancel);
       geometry.dispose(); material.dispose(); texture.dispose(); cloudMaterial.dispose(); starGeometry.dispose(); starMaterial.dispose(); orbitGeometry.dispose(); orbitMaterial.dispose(); earth.dispose(); trees.dispose(); clouds.dispose(); renderer.dispose(); renderer.domElement.remove();
     },
   };

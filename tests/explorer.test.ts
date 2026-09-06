@@ -123,6 +123,17 @@ describe('Vue Earth explorer', () => {
     ).toBe('true');
   });
 
+  it('shows the biome picked by the renderer and pauses auto-rotation', async () => {
+    const view = await start();
+    callbacks().onSelect('ocean', -12.5, -143);
+    await nextTick();
+    expect(view.get('.discovery-title').text()).toBe('Ocean biome');
+    expect(view.get('.discovery-bottom').text()).toContain(
+      '12.5° S / 143.0° W',
+    );
+    expect(api.setRotate).toHaveBeenLastCalledWith(false);
+  });
+
   it('keeps the rotation switch in sync after a drag', async () => {
     const view = await start();
     callbacks().onInteract();
