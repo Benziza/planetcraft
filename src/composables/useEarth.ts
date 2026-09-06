@@ -114,6 +114,29 @@ export function useEarth(container: Ref<HTMLDivElement | null>) {
     api?.zoom(direction);
   }
 
+  function onKeydown(event: KeyboardEvent) {
+    if (
+      !ready.value ||
+      ![
+        'ArrowLeft',
+        'ArrowRight',
+        'ArrowUp',
+        'ArrowDown',
+        '+',
+        '=',
+        '-',
+        'Home',
+      ].includes(event.key)
+    )
+      return;
+    event.preventDefault();
+    if (event.key === 'Home') reset();
+    else {
+      rotating.value = false;
+      api?.key(event.key);
+    }
+  }
+
   return {
     ready,
     error,
@@ -128,5 +151,6 @@ export function useEarth(container: Ref<HTMLDivElement | null>) {
     focusBiome,
     reset,
     zoom,
+    onKeydown,
   };
 }

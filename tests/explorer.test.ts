@@ -144,6 +144,27 @@ describe('Vue Earth explorer', () => {
     expect(api.setRotate).toHaveBeenLastCalledWith(false);
   });
 
+  it('routes zoom and keyboard controls and resets the selected biome', async () => {
+    const view = await start();
+    await view.get('button[aria-label="Zoom in"]').trigger('click');
+    await view.get('button[aria-label="Zoom out"]').trigger('click');
+    expect(api.zoom.mock.calls.map((call) => call[0])).toEqual([-1, 1]);
+    const key = new KeyboardEvent('keydown', {
+      key: 'ArrowRight',
+      bubbles: true,
+      cancelable: true,
+    });
+    view.get('.earth-canvas').element.dispatchEvent(key);
+    await nextTick();
+    expect(key.defaultPrevented).toBe(true);
+    expect(api.key).toHaveBeenLastCalledWith('ArrowRight');
+    await view.get('button[title="Explore Sahara desert"]').trigger('click');
+    await view.get('.earth-canvas').trigger('keydown', { key: 'Home' });
+    expect(api.reset).toHaveBeenCalledOnce();
+    expect(view.get('.discovery-title').text()).toBe('Planet Earth');
+    expect(api.setRotate).toHaveBeenLastCalledWith(true);
+  });
+
   it('respects reduced motion on initialization and reset', async () => {
     reducedMotion = true;
     const view = await start();

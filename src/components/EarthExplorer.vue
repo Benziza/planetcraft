@@ -37,6 +37,7 @@ const {
   focusBiome,
   reset,
   zoom,
+  onKeydown,
 } = useEarth(container);
 </script>
 
@@ -66,7 +67,8 @@ const {
         class="earth-canvas"
         role="application"
         tabindex="0"
-        aria-label="3D voxel Earth. Drag to rotate and scroll to zoom."
+        aria-label="3D voxel Earth. Drag or use arrow keys to rotate, scroll or use plus and minus to zoom. Click a block to discover its biome."
+        @keydown="onKeydown"
       />
 
       <output v-if="!ready" class="world-loading">
