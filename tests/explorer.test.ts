@@ -137,13 +137,12 @@ describe('Vue Earth explorer', () => {
     expect(api.setClouds).toHaveBeenLastCalledWith(false);
   });
 
-  it('visits a biome, stops rotation, and shows matching coordinates', async () => {
+  it('visits a biome and stops rotation without showing a discovery card', async () => {
     const view = await start();
     await view.get('button[title="Explore Sahara desert"]').trigger('click');
     expect(api.focus).toHaveBeenLastCalledWith(24, 15);
     expect(api.setRotate).toHaveBeenLastCalledWith(false);
-    expect(view.get('.discovery-title').text()).toBe('Sahara desert');
-    expect(view.get('.discovery-bottom').text()).toContain('24.0° N / 15.0° E');
+    expect(view.find('.discovery-card').exists()).toBe(false);
     expect(
       view
         .get('button[title="Explore Sahara desert"]')
@@ -151,14 +150,16 @@ describe('Vue Earth explorer', () => {
     ).toBe('true');
   });
 
-  it('shows the biome picked by the renderer and pauses auto-rotation', async () => {
+  it('highlights the biome picked by the renderer and pauses auto-rotation', async () => {
     const view = await start();
     callbacks().onSelect('ocean', -12.5, -143);
     await nextTick();
-    expect(view.get('.discovery-title').text()).toBe('Ocean biome');
-    expect(view.get('.discovery-bottom').text()).toContain(
-      '12.5° S / 143.0° W',
-    );
+    expect(
+      view
+        .get('button[title="Explore Pacific Ocean"]')
+        .attributes('aria-pressed'),
+    ).toBe('true');
+    expect(view.find('.discovery-card').exists()).toBe(false);
     expect(api.setRotate).toHaveBeenLastCalledWith(false);
   });
 
@@ -189,7 +190,9 @@ describe('Vue Earth explorer', () => {
     await view.get('button[title="Explore Sahara desert"]').trigger('click');
     await view.get('.earth-canvas').trigger('keydown', { key: 'Home' });
     expect(api.reset).toHaveBeenCalledOnce();
-    expect(view.get('.discovery-title').text()).toBe('Planet Earth');
+    expect(view.find('.biome-button[aria-pressed="true"]').exists()).toBe(
+      false,
+    );
     expect(api.setRotate).toHaveBeenLastCalledWith(true);
   });
 

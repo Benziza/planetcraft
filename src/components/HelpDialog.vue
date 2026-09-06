@@ -54,8 +54,8 @@ const open = ref(false);
           <div>
             <strong>Discover a block</strong>
             <p>
-              Click a block to see its biome. Pick a biome below to visit a
-              place.
+              Click a block to highlight its biome below. Pick a biome to visit
+              a place.
             </p>
           </div>
         </div>

@@ -10,8 +10,6 @@ export const biomes = [
     lat: -5,
     lon: -61,
     label: 'Amazon rainforest',
-    text: 'A little green. A lot of life.',
-    detail: 'South America',
   },
   {
     id: 'desert',
@@ -21,8 +19,6 @@ export const biomes = [
     lat: 24,
     lon: 15,
     label: 'Sahara desert',
-    text: 'Endless sands, one block at a time.',
-    detail: 'North Africa',
   },
   {
     id: 'ocean',
@@ -32,8 +28,6 @@ export const biomes = [
     lat: 6,
     lon: -145,
     label: 'Pacific Ocean',
-    text: 'Take the scenic route across the blue.',
-    detail: 'Pacific',
   },
   {
     id: 'snow',
@@ -43,8 +37,6 @@ export const biomes = [
     lat: 73,
     lon: -41,
     label: 'Greenland ice sheet',
-    text: 'The quiet, frozen edge of the world.',
-    detail: 'Arctic',
   },
   {
     id: 'mountain',
@@ -54,8 +46,6 @@ export const biomes = [
     lat: 30,
     lon: 85,
     label: 'The Himalayas',
-    text: 'A new perspective from the top.',
-    detail: 'Asia',
   },
 ] satisfies {
   id: BiomeId;
@@ -65,16 +55,4 @@ export const biomes = [
   lat: number;
   lon: number;
   label: string;
-  text: string;
-  detail: string;
 }[];
-
-export function defaultSelection() {
-  return {
-    name: 'Planet Earth',
-    sub: 'A familiar world. A fresh perspective.',
-    location: 'THE OVERWORLD',
-    lat: 0,
-    lon: 0,
-  };
-}
