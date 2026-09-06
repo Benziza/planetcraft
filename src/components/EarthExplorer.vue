@@ -39,6 +39,7 @@ const {
   reset,
   zoom,
   onKeydown,
+  reload,
 } = useEarth(container);
 </script>
 
@@ -73,10 +74,17 @@ const {
       />
 
       <output v-if="!ready" class="world-loading">
-        <Box class="loading-cube" />
-        <span>{{
-          error ? 'Your world could not load.' : 'Building your little world…'
-        }}</span>
+        <template v-if="error"
+          ><Box /><strong>Your world couldn’t load.</strong
+          ><span>Check your connection and enable WebGL in your browser.</span
+          ><button class="retry-button" @click="reload">
+            Try again <RotateCcw :size="15" /></button
+        ></template>
+        <template v-else
+          ><Box class="loading-cube" /><span
+            >Placing the last few blocks…</span
+          ></template
+        >
       </output>
 
       <div class="intro-panel">

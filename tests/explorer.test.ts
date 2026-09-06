@@ -21,6 +21,16 @@ function makeAPI() {
   } satisfies EarthAPI;
 }
 
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  let reject!: (reason: unknown) => void;
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  return { promise, resolve, reject };
+}
+
 describe('Vue Earth explorer', () => {
   let wrapper: VueWrapper | undefined;
   let api = makeAPI();
@@ -95,6 +105,24 @@ describe('Vue Earth explorer', () => {
     expect(api.setNight).toHaveBeenLastCalledWith(false);
     expect(api.setClouds).toHaveBeenLastCalledWith(true);
     expect(api.setRotate).toHaveBeenLastCalledWith(true);
+  });
+
+  it('keeps settings changed during loading when the scene arrives', async () => {
+    const pending = deferred<EarthAPI>();
+    createEarthMock.mockReturnValue(pending.promise);
+    const view = await start();
+    expect(
+      view.get('button[aria-label="Zoom in"]').attributes('disabled'),
+    ).toBeDefined();
+    expect(view.get('.biome-button').attributes('disabled')).toBeDefined();
+    await view.get('[role="radio"][value="night"]').trigger('click');
+    await view.get('button[aria-label="Show clouds"]').trigger('click');
+    await view.get('button[aria-label="Auto-rotate"]').trigger('click');
+    pending.resolve(api);
+    await flushPromises();
+    expect(api.setNight).toHaveBeenLastCalledWith(true);
+    expect(api.setClouds).toHaveBeenLastCalledWith(false);
+    expect(api.setRotate).toHaveBeenLastCalledWith(false);
   });
 
   it('updates the scene from the Vue lighting and cloud controls', async () => {
@@ -173,6 +201,33 @@ describe('Vue Earth explorer', () => {
     expect(api.setRotate).toHaveBeenLastCalledWith(true);
     await view.get('button[aria-label="Reset view"]').trigger('click');
     expect(api.setRotate).toHaveBeenLastCalledWith(false);
+  });
+
+  it('shows retry feedback and keeps camera and biome controls disabled after failure', async () => {
+    createEarthMock.mockRejectedValue(new Error('Land data unavailable'));
+    const view = await start();
+    expect(view.get('.world-loading').text()).toContain(
+      'Your world couldn’t load.',
+    );
+    expect(view.get('.retry-button').text()).toContain('Try again');
+    expect(
+      view.get('button[aria-label="Zoom in"]').attributes('disabled'),
+    ).toBeDefined();
+    expect(view.get('.biome-button').attributes('disabled')).toBeDefined();
+  });
+
+  it('aborts initialization and disposes a late scene after unmount', async () => {
+    const pending = deferred<EarthAPI>();
+    createEarthMock.mockReturnValue(pending.promise);
+    const view = await start();
+    const signal = createEarthMock.mock.calls[0][1] as AbortSignal;
+    view.unmount();
+    wrapper = undefined;
+    expect(signal.aborted).toBe(true);
+    pending.resolve(api);
+    await flushPromises();
+    expect(api.dispose).toHaveBeenCalledOnce();
+    expect(api.setNight).not.toHaveBeenCalled();
   });
 
   it('disposes an initialized scene once on unmount', async () => {
