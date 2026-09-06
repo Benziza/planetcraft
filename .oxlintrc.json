@@ -1,0 +1,12 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["eslint", "typescript", "unicorn", "oxc", "vue"],
+  "categories": { "correctness": "error" },
+  "env": { "builtin": true, "browser": true, "node": true },
+  "ignorePatterns": ["dist/**", "coverage/**"],
+  "rules": {
+    "no-var": "error",
+    "prefer-const": "error",
+    "typescript/no-explicit-any": "error"
+  }
+}
