@@ -134,6 +134,20 @@ a {
   letter-spacing: 1.5px;
   color: #737f75;
 }
+.help-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #b8c0b7;
+  background: none;
+  border: none;
+  font-size: 14px;
+  padding: 10px 0 10px 16px;
+  border-left: 1px solid #ffffff16;
+}
+.help-button:hover {
+  color: #b6e58c;
+}
 .explorer {
   position: relative;
   min-height: 660px;
@@ -669,6 +683,51 @@ a {
     transform: rotateY(360deg) translateY(0);
   }
 }
+.help-dialog {
+  max-width: 480px !important;
+  padding: 30px !important;
+  border: 1px solid #516342;
+  border-radius: 5px !important;
+  box-shadow: 8px 8px 0 #0005;
+}
+.help-dialog [data-slot='dialog-title'] {
+  font-size: 25px;
+  margin-top: 12px;
+  margin-bottom: 8px;
+}
+.help-dialog [data-slot='dialog-description'] {
+  font-size: 15px;
+  line-height: 1.6;
+}
+.help-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 13px 0;
+  border-top: 1px solid #ffffff12;
+}
+.help-row > svg {
+  flex-shrink: 0;
+  width: 20px;
+  margin-top: 3px;
+  color: #b6e58c;
+}
+.help-row strong {
+  font-size: 16px;
+  font-weight: 500;
+}
+.help-row p {
+  font-size: 14px;
+  color: #9ca794;
+  margin: 7px 0 0;
+  line-height: 1.7;
+}
+.help-note {
+  color: #83917c;
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 0;
+}
 @media (prefers-reduced-motion: reduce) {
   *,
   *:before,
@@ -723,6 +782,46 @@ p {
 .settings-group [data-slot='switch-thumb'][data-state='checked'] {
   background: #162611;
   transform: translateX(12px);
+}
+.help-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: #0008;
+  backdrop-filter: blur(5px);
+}
+.help-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 21;
+  width: calc(100% - 32px);
+  max-height: calc(100svh - 32px);
+  overflow: auto;
+  display: grid;
+  gap: 16px;
+  background: var(--popover);
+  color: var(--foreground);
+}
+.help-close {
+  position: absolute;
+  right: 9px;
+  top: 9px;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  color: #b6c4ab;
+}
+.help-close:hover {
+  background: #b6e58c18;
+}
+.help-dialog [data-slot='dialog-description'] {
+  color: #929c92;
+  margin-bottom: 0;
 }
 @media (prefers-reduced-motion: reduce) {
   .settings-group [data-slot='switch'],
