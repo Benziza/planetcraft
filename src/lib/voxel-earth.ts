@@ -137,6 +137,24 @@ export async function createEarth(container: HTMLElement, signal: AbortSignal, c
   foliage.forEach((block, i) => { dummy.position.copy(block.position); dummy.scale.copy(block.scale); dummy.updateMatrix(); trees.setMatrixAt(i, dummy.matrix); trees.setColorAt(i, color.set(block.color)); });
   trees.instanceMatrix.needsUpdate = true; if (trees.instanceColor) trees.instanceColor.needsUpdate = true; trees.computeBoundingSphere(); planet.add(trees);
 
+  const cloudBlocks: Block[] = [];
+  const cloudCenters = [[44, -30], [-14, -8], [18, 75], [-35, 60], [53, 111], [6, -94], [-30, -123], [61, -110], [-4, 138], [26, -174], [-48, 160], [8, 31]];
+  for (const [lat, lon] of cloudCenters) {
+    const normal = new THREE.Vector3(Math.cos(lat * radians) * Math.sin(lon * radians), Math.sin(lat * radians), Math.cos(lat * radians) * Math.cos(lon * radians));
+    const tangent = new THREE.Vector3().crossVectors(normal, new THREE.Vector3(0, 1, 0)).normalize();
+    const vertical = new THREE.Vector3().crossVectors(tangent, normal).normalize();
+    for (let a = -3; a <= 3; a++) for (let b = -1; b <= 1; b++) {
+      if (noise(a, b, lon) > .73 || (Math.abs(a) === 3 && b !== 0)) continue;
+      const p = normal.clone().multiplyScalar(3.33 + noise(a, b, lat) * .055).addScaledVector(tangent, a * .16).addScaledVector(vertical, b * .15);
+      p.set(Math.round(p.x / .1) * .1, Math.round(p.y / .1) * .1, Math.round(p.z / .1) * .1);
+      cloudBlocks.push({ position: p, scale: new THREE.Vector3(.24, .14, .22), color: '#f3f4e9' });
+    }
+  }
+  const cloudMaterial = new THREE.MeshStandardMaterial({ roughness: 1, color: '#edf4ef' });
+  const clouds = new THREE.InstancedMesh(geometry, cloudMaterial, cloudBlocks.length);
+  cloudBlocks.forEach((block, i) => { dummy.position.copy(block.position); dummy.scale.copy(block.scale); dummy.updateMatrix(); clouds.setMatrixAt(i, dummy.matrix); });
+  clouds.instanceMatrix.needsUpdate = true; clouds.computeBoundingSphere(); planet.add(clouds);
+
   let requestedRotation = true;
   let frame = 0;
   let lastTime = performance.now();
@@ -156,9 +174,9 @@ export async function createEarth(container: HTMLElement, signal: AbortSignal, c
   controls.addEventListener('start', interact);
 
   return {
-    blockCount: cells.length + foliage.length,
+    blockCount: cells.length + foliage.length + cloudBlocks.length,
     setNight: () => undefined,
-    setClouds: () => undefined,
+    setClouds: value => { clouds.visible = value; },
     setRotate: value => { requestedRotation = value; },
     focus: () => undefined,
     reset: () => undefined,
@@ -167,7 +185,7 @@ export async function createEarth(container: HTMLElement, signal: AbortSignal, c
     dispose: () => {
       if (disposed) return; disposed = true; cancelAnimationFrame(frame); observer.disconnect();
       controls.removeEventListener('start', interact); controls.dispose();
-      geometry.dispose(); material.dispose(); texture.dispose(); earth.dispose(); trees.dispose(); renderer.dispose(); renderer.domElement.remove();
+      geometry.dispose(); material.dispose(); texture.dispose(); cloudMaterial.dispose(); earth.dispose(); trees.dispose(); clouds.dispose(); renderer.dispose(); renderer.domElement.remove();
     },
   };
 }
