@@ -2,6 +2,8 @@
 
 Explore a universe of blocks, inspired by Minecraft.
 
+![Earth in day and night, followed by the Mars 404 screen](.github/assets/planetcraft-demo.gif)
+
 Choose a planet and start exploring. Earth is ready: give it a spin, discover its landscapes, and switch between day and night.
 
 The other planets are still waiting for their first blocks.
