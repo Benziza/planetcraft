@@ -15,14 +15,41 @@ export type EarthAPI = {
 };
 type Cell = { x: number; y: number; z: number; biome: BiomeId; lat: number; lon: number };
 type Callbacks = { onSelect: (biome: BiomeId, lat: number, lon: number) => void; onInteract: () => void };
+type Land = { features: { geometry: { type: string; coordinates: number[][][] | number[][][][] } }[] };
 
 const palette = { ocean: '#2675a6', forest: '#629441', desert: '#d3b879', snow: '#d7e6e5', mountain: '#8f9181' };
 const radians = Math.PI / 180;
 function noise(x: number, y: number, z: number) { const value = Math.sin(x * 127.1 + y * 311.7 + z * 74.7) * 43758.5453; return value - Math.floor(value); }
 
 export async function createEarth(container: HTMLElement, signal: AbortSignal, callbacks: Callbacks): Promise<EarthAPI> {
+  const response = await fetch(`${import.meta.env.BASE_URL}land.geojson`, { signal });
+  if (!response.ok) throw new Error('Land data unavailable');
+  const land = await response.json() as Land;
   if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
-  const getBiome = (_lat: number, _lon: number): BiomeId => 'ocean';
+  const map = document.createElement('canvas');
+  map.width = 1024; map.height = 512;
+  const ctx = map.getContext('2d', { willReadFrequently: true })!;
+  ctx.fillStyle = '#fff';
+  for (const feature of land.features) {
+    const polygons = feature.geometry.type === 'Polygon' ? [feature.geometry.coordinates as number[][][]] : feature.geometry.coordinates as number[][][][];
+    for (const polygon of polygons) {
+      ctx.beginPath();
+      for (const ring of polygon) {
+        ring.forEach(([lon, lat], i) => { const x = (lon + 180) / 360 * 1024; const y = (90 - lat) / 180 * 512; if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); });
+        ctx.closePath();
+      }
+      ctx.fill('evenodd');
+    }
+  }
+  const pixels = ctx.getImageData(0, 0, 1024, 512).data;
+  const isLand = (lat: number, lon: number) => pixels[(Math.min(511, Math.max(0, Math.floor((90 - lat) / 180 * 512))) * 1024 + Math.min(1023, Math.max(0, Math.floor((lon + 180) / 360 * 1024)))) * 4 + 3] > 128;
+  const getBiome = (lat: number, lon: number): BiomeId => {
+    if (!isLand(lat, lon)) return 'ocean';
+    if (lat > 69 || lat < -62 || (lon > -65 && lon < -22 && lat > 59)) return 'snow';
+    if ((lat > 15 && lat < 33 && lon > -18 && lon < 61) || (lat < -19 && lat > -32 && lon > 116 && lon < 142) || (lat < -16 && lat > -29 && lon > 12 && lon < 23)) return 'desert';
+    if ((lat > 27 && lat < 38 && lon > 70 && lon < 105) || (lat > -49 && lat < 0 && lon > -77 && lon < -67) || (lat > 36 && lat < 58 && lon > -125 && lon < -110)) return 'mountain';
+    return 'forest';
+  };
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(37, 1, 0.1, 120);
