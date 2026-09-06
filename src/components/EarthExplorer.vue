@@ -11,6 +11,7 @@ import {
   Move,
   Plus,
   Rotate3D,
+  RotateCcw,
   Sun,
 } from '@lucide/vue';
 import { RadioGroupItem, RadioGroupRoot } from 'reka-ui';
@@ -19,7 +20,7 @@ import WorldSwitch from './WorldSwitch.vue';
 
 const container = ref<HTMLDivElement | null>(null);
 const homeUrl = import.meta.env.BASE_URL;
-const { ready, error, lighting, night, clouds, rotating, count, zoom } =
+const { ready, error, lighting, night, clouds, rotating, count, reset, zoom } =
   useEarth(container);
 </script>
 
@@ -106,6 +107,15 @@ const { ready, error, lighting, night, clouds, rotating, count, zoom } =
           @click="zoom(1)"
         >
           <Minus :size="20" />
+        </button>
+        <span />
+        <button
+          :disabled="!ready"
+          aria-label="Reset view"
+          title="Reset view"
+          @click="reset"
+        >
+          <RotateCcw :size="18" />
         </button>
       </div>
 
