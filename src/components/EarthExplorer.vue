@@ -19,6 +19,7 @@ import {
 import { RadioGroupItem, RadioGroupRoot } from 'reka-ui';
 import { useEarth } from '../composables/useEarth';
 import { biomes } from '../data/biomes';
+import HelpDialog from './HelpDialog.vue';
 import WorldSwitch from './WorldSwitch.vue';
 
 const container = ref<HTMLDivElement | null>(null);
@@ -53,7 +54,7 @@ const {
         ><span class="nav-badge">01</span>
       </div>
       <div class="header-right">
-        <span class="edition">A WORLD IN BLOCKS</span>
+        <span class="edition">A WORLD IN BLOCKS</span><HelpDialog />
       </div>
     </header>
 

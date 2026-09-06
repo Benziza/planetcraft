@@ -181,4 +181,20 @@ describe('Vue Earth explorer', () => {
     wrapper = undefined;
     expect(api.dispose).toHaveBeenCalledOnce();
   });
+
+  it('opens and closes the accessible help dialog', async () => {
+    const view = await start();
+    await view.get('.help-button').trigger('click');
+    await flushPromises();
+    const dialog = document.querySelector('[role="dialog"]');
+    expect(dialog?.textContent).toContain('Make yourself at home.');
+    expect(dialog?.getAttribute('aria-labelledby')).toBeTruthy();
+    (
+      document.querySelector(
+        'button[aria-label="Close guide"]',
+      ) as HTMLButtonElement
+    ).click();
+    await flushPromises();
+    expect(document.querySelector('[role="dialog"]')).toBeNull();
+  });
 });
