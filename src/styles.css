@@ -166,6 +166,9 @@ a {
   opacity: 0.6;
   mask-image: linear-gradient(to right, transparent 12%, black 40%);
 }
+.is-night .scene-backdrop {
+  opacity: 0.4;
+}
 .earth-canvas {
   position: absolute;
   top: 0;
@@ -267,6 +270,32 @@ a {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+.time-tabs {
+  position: absolute;
+  top: 78px;
+  right: 4.3%;
+}
+.time-list {
+  border: 1px solid #ffffff16 !important;
+  height: 39px !important;
+  border-radius: 5px !important;
+  background: #111915c7 !important;
+  padding: 3px !important;
+  gap: 2px;
+}
+.time-button {
+  height: 31px !important;
+  padding: 0 12px !important;
+  gap: 7px !important;
+  font-size: 13px !important;
+  border-radius: 3px !important;
+}
+.time-button[data-state='checked'] {
+  background: #293725 !important;
+  color: #d2e9bd !important;
+  border-color: #a9c89022 !important;
+  box-shadow: inset 0 1px 0 #b6e58c0a !important;
 }
 .orbit-caption {
   position: absolute;
@@ -462,6 +491,18 @@ h2,
 h3,
 p {
   margin-top: 0;
+}
+.time-list {
+  display: inline-flex;
+  align-items: center;
+}
+.time-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #929c92;
 }
 .settings-group [data-slot='switch'] {
   padding: 0;

@@ -5,20 +5,24 @@ import {
   Cloud,
   Compass,
   Globe2,
+  Moon,
   MousePointer2,
   Move,
   Rotate3D,
+  Sun,
 } from '@lucide/vue';
+import { RadioGroupItem, RadioGroupRoot } from 'reka-ui';
 import { useEarth } from '../composables/useEarth';
 import WorldSwitch from './WorldSwitch.vue';
 
 const container = ref<HTMLDivElement | null>(null);
 const homeUrl = import.meta.env.BASE_URL;
-const { ready, error, clouds, rotating, count } = useEarth(container);
+const { ready, error, lighting, night, clouds, rotating, count } =
+  useEarth(container);
 </script>
 
 <template>
-  <main class="earth-app">
+  <main class="earth-app" :class="{ 'is-night': night }">
     <header class="topbar">
       <a class="brand" :href="homeUrl" aria-label="Earthcraft home"
         ><span class="brand-mark"><Box :size="25" :stroke-width="1.8" /></span
@@ -66,6 +70,22 @@ const { ready, error, clouds, rotating, count } = useEarth(container);
         <span class="explore-note"
           ><MousePointer2 :size="15" /> Go on. Give it a spin.</span
         >
+      </div>
+
+      <div class="time-tabs">
+        <RadioGroupRoot
+          v-model="lighting"
+          class="time-list"
+          orientation="horizontal"
+          aria-label="World lighting"
+        >
+          <RadioGroupItem value="day" class="time-button"
+            ><Sun :size="16" /> Day</RadioGroupItem
+          >
+          <RadioGroupItem value="night" class="time-button"
+            ><Moon :size="16" /> Night</RadioGroupItem
+          >
+        </RadioGroupRoot>
       </div>
 
       <div class="orbit-caption">
