@@ -42,10 +42,16 @@ const {
 <template>
   <main class="earth-app" :class="{ 'is-night': night }">
     <header class="topbar">
-      <a class="brand" :href="homeUrl" aria-label="Earthcraft home"
-        ><span class="brand-mark"><Box :size="25" :stroke-width="1.8" /></span
-        ><span>earthcraft<span class="brand-period">.</span></span></a
-      >
+      <a class="brand" :href="homeUrl" aria-label="Earthcraft home">
+        <img
+          class="brand-mark"
+          :src="`${homeUrl}favicon.svg`"
+          alt=""
+          width="38"
+          height="40"
+        />
+        <span>earthcraft<span class="brand-period">.</span></span>
+      </a>
       <div class="nav-current">
         <Globe2 :size="15" /><span>World explorer</span
         ><span class="nav-badge">01</span>

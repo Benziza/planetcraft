@@ -89,13 +89,9 @@ a {
 .brand-mark {
   width: 38px;
   height: 40px;
-  display: grid;
-  place-items: center;
-  color: #c5eca2;
-  background: #23341e;
-  border: 1px solid #8eb56d66;
-  box-shadow: inset 0 -4px 0 #0003;
-  border-radius: 3px;
+  display: block;
+  flex-shrink: 0;
+  object-fit: contain;
 }
 .brand-period {
   color: var(--primary);
