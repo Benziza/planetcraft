@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import {
-  ArrowUpRight,
   Box,
   Cloud,
   Compass,
   Globe2,
-  Leaf,
   Minus,
   Moon,
   MousePointer2,
@@ -33,8 +31,6 @@ const {
   rotating,
   active,
   count,
-  selection,
-  coordinates,
   focusBiome,
   reset,
   zoom,
@@ -145,24 +141,6 @@ const {
           <RotateCcw :size="18" />
         </button>
       </div>
-
-      <aside class="discovery-card" aria-live="polite">
-        <div class="discovery-label">
-          <span class="tiny-cross">+</span> {{ selection.location }}
-          <ArrowUpRight :size="15" />
-        </div>
-        <div class="discovery-title">
-          <span class="biome-chip" :class="active || 'earth'"
-            ><Leaf :size="22"
-          /></span>
-          <h2>{{ selection.name }}</h2>
-        </div>
-        <p>{{ selection.sub }}</p>
-        <div class="discovery-bottom">
-          <span>{{ coordinates }}</span
-          ><span class="small-dot" />
-        </div>
-      </aside>
 
       <div class="orbit-caption">
         <span class="orbit-cross">+</span><span>EARTH</span

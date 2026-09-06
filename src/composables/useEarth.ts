@@ -6,7 +6,7 @@ import {
   watch,
   type Ref,
 } from 'vue';
-import { biomes, defaultSelection } from '../data/biomes';
+import { biomes } from '../data/biomes';
 import type { BiomeId, EarthAPI } from '../lib/voxel-earth';
 
 export function useEarth(container: Ref<HTMLDivElement | null>) {
@@ -18,12 +18,6 @@ export function useEarth(container: Ref<HTMLDivElement | null>) {
   const rotating = ref(true);
   const active = ref<BiomeId | null>(null);
   const count = ref(0);
-  const selection = ref(defaultSelection());
-  const coordinates = computed(() =>
-    active.value
-      ? `${Math.abs(selection.value.lat).toFixed(1)}° ${selection.value.lat < 0 ? 'S' : 'N'} / ${Math.abs(selection.value.lon).toFixed(1)}° ${selection.value.lon < 0 ? 'W' : 'E'}`
-      : 'SEED: HOME SWEET HOME',
-  );
 
   // Keep Three.js objects outside deep Vue reactivity.
   let api: EarthAPI | null = null;
@@ -44,17 +38,9 @@ export function useEarth(container: Ref<HTMLDivElement | null>) {
       const { createEarth } = await import('../lib/voxel-earth');
       if (disposed || !container.value) return;
       const current = await createEarth(container.value, controller.signal, {
-        onSelect: (biome, lat, lon) => {
+        onSelect: (biome) => {
           if (disposed) return;
-          const item = biomes.find((candidate) => candidate.id === biome)!;
           active.value = biome;
-          selection.value = {
-            name: `${item.name} biome`,
-            sub: item.text,
-            location: 'BLOCK DISCOVERED',
-            lat,
-            lon,
-          };
           rotating.value = false;
         },
         onInteract: () => {
@@ -89,13 +75,6 @@ export function useEarth(container: Ref<HTMLDivElement | null>) {
     if (!ready.value || !biome) return;
     active.value = biome.id;
     rotating.value = false;
-    selection.value = {
-      name: biome.label,
-      sub: biome.text,
-      location: biome.detail.toUpperCase(),
-      lat: biome.lat,
-      lon: biome.lon,
-    };
     api?.focus(biome.lat, biome.lon);
   }
 
@@ -103,7 +82,6 @@ export function useEarth(container: Ref<HTMLDivElement | null>) {
     if (!ready.value) return;
     api?.reset();
     active.value = null;
-    selection.value = defaultSelection();
     reducedMotion = window.matchMedia(
       '(prefers-reduced-motion: reduce)',
     ).matches;
@@ -150,8 +128,6 @@ export function useEarth(container: Ref<HTMLDivElement | null>) {
     rotating,
     active,
     count,
-    selection,
-    coordinates,
     focusBiome,
     reset,
     zoom,
