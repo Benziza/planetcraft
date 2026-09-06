@@ -4,7 +4,6 @@ import {
   Box,
   Cloud,
   Compass,
-  Globe2,
   Minus,
   Moon,
   MousePointer2,
@@ -17,11 +16,10 @@ import {
 import { RadioGroupItem, RadioGroupRoot } from 'reka-ui';
 import { useEarth } from '../composables/useEarth';
 import { biomes } from '../data/biomes';
-import HelpDialog from './HelpDialog.vue';
+import SiteHeader from './SiteHeader.vue';
 import WorldSwitch from './WorldSwitch.vue';
 
 const container = ref<HTMLDivElement | null>(null);
-const homeUrl = import.meta.env.BASE_URL;
 const {
   ready,
   error,
@@ -41,25 +39,7 @@ const {
 
 <template>
   <main class="earth-app" :class="{ 'is-night': night }">
-    <header class="topbar">
-      <a class="brand" :href="homeUrl" aria-label="Earthcraft home">
-        <img
-          class="brand-mark"
-          :src="`${homeUrl}favicon.svg`"
-          alt=""
-          width="38"
-          height="40"
-        />
-        <span>earthcraft<span class="brand-period">.</span></span>
-      </a>
-      <div class="nav-current">
-        <Globe2 :size="15" /><span>World explorer</span
-        ><span class="nav-badge">01</span>
-      </div>
-      <div class="header-right">
-        <span class="edition">A WORLD IN BLOCKS</span><HelpDialog />
-      </div>
-    </header>
+    <SiteHeader><slot name="planet-picker" /></SiteHeader>
 
     <section class="explorer" aria-label="Interactive Earth explorer">
       <div class="scene-backdrop" aria-hidden="true" />
@@ -93,7 +73,7 @@ const {
         <div class="eyebrow">
           <span class="status-dot" /> THE WORLD, A LITTLE DIFFERENT
         </div>
-        <h1>SMALL <br />BLOCKS.<br /><span>BIG WORLD.</span></h1>
+        <h1 tabindex="-1">SMALL <br />BLOCKS.<br /><span>BIG WORLD.</span></h1>
         <p>
           Our home planet. Reimagined, one<br class="desktop-break" />
           block at a time.
