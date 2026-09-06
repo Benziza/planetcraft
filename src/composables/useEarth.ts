@@ -63,5 +63,9 @@ export function useEarth(container: Ref<HTMLDivElement | null>) {
     api = null;
   });
 
-  return { ready, error, lighting, night, clouds, rotating, count };
+  function zoom(direction: number) {
+    api?.zoom(direction);
+  }
+
+  return { ready, error, lighting, night, clouds, rotating, count, zoom };
 }
