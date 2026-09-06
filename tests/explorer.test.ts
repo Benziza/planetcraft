@@ -109,6 +109,20 @@ describe('Vue Earth explorer', () => {
     expect(api.setClouds).toHaveBeenLastCalledWith(false);
   });
 
+  it('visits a biome, stops rotation, and shows matching coordinates', async () => {
+    const view = await start();
+    await view.get('button[title="Explore Sahara desert"]').trigger('click');
+    expect(api.focus).toHaveBeenLastCalledWith(24, 15);
+    expect(api.setRotate).toHaveBeenLastCalledWith(false);
+    expect(view.get('.discovery-title').text()).toBe('Sahara desert');
+    expect(view.get('.discovery-bottom').text()).toContain('24.0° N / 15.0° E');
+    expect(
+      view
+        .get('button[title="Explore Sahara desert"]')
+        .attributes('aria-pressed'),
+    ).toBe('true');
+  });
+
   it('keeps the rotation switch in sync after a drag', async () => {
     const view = await start();
     callbacks().onInteract();

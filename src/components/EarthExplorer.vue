@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import {
+  ArrowUpRight,
   Box,
   Cloud,
   Compass,
   Globe2,
+  Leaf,
   Minus,
   Moon,
   MousePointer2,
@@ -16,12 +18,26 @@ import {
 } from '@lucide/vue';
 import { RadioGroupItem, RadioGroupRoot } from 'reka-ui';
 import { useEarth } from '../composables/useEarth';
+import { biomes } from '../data/biomes';
 import WorldSwitch from './WorldSwitch.vue';
 
 const container = ref<HTMLDivElement | null>(null);
 const homeUrl = import.meta.env.BASE_URL;
-const { ready, error, lighting, night, clouds, rotating, count, reset, zoom } =
-  useEarth(container);
+const {
+  ready,
+  error,
+  lighting,
+  night,
+  clouds,
+  rotating,
+  active,
+  count,
+  selection,
+  coordinates,
+  focusBiome,
+  reset,
+  zoom,
+} = useEarth(container);
 </script>
 
 <template>
@@ -119,6 +135,24 @@ const { ready, error, lighting, night, clouds, rotating, count, reset, zoom } =
         </button>
       </div>
 
+      <aside class="discovery-card" aria-live="polite">
+        <div class="discovery-label">
+          <span class="tiny-cross">+</span> {{ selection.location }}
+          <ArrowUpRight :size="15" />
+        </div>
+        <div class="discovery-title">
+          <span class="biome-chip" :class="active || 'earth'"
+            ><Leaf :size="22"
+          /></span>
+          <h2>{{ selection.name }}</h2>
+        </div>
+        <p>{{ selection.sub }}</p>
+        <div class="discovery-bottom">
+          <span>{{ coordinates }}</span
+          ><span class="small-dot" />
+        </div>
+      </aside>
+
       <div class="orbit-caption">
         <span class="orbit-cross">+</span><span>EARTH</span
         ><span class="orbit-line" /><span>THE OVERWORLD</span>
@@ -129,7 +163,10 @@ const { ready, error, lighting, night, clouds, rotating, count, reset, zoom } =
       </div>
     </section>
 
-    <section class="control-deck" aria-label="World settings">
+    <section
+      class="control-deck"
+      aria-label="World settings and biome destinations"
+    >
       <div class="settings-group">
         <label for="auto-rotate"
           ><Rotate3D :size="17" /><span>Auto-rotate</span
@@ -139,6 +176,31 @@ const { ready, error, lighting, night, clouds, rotating, count, reset, zoom } =
           ><Cloud :size="17" /><span>Clouds</span
           ><WorldSwitch id="show-clouds" v-model="clouds" label="Show clouds"
         /></label>
+      </div>
+      <div class="biome-picker">
+        <div class="biome-caption">
+          A LITTLE BIT OF EVERYTHING<span>JUMP TO A BIOME</span>
+        </div>
+        <fieldset class="hotbar" aria-label="Jump to a biome">
+          <button
+            v-for="(biome, index) in biomes"
+            :key="biome.id"
+            :aria-pressed="active === biome.id"
+            :disabled="!ready"
+            class="biome-button"
+            :class="{ selected: active === biome.id }"
+            :style="{ '--biome-color': biome.color }"
+            :title="`Explore ${biome.label}`"
+            @click="focusBiome(index)"
+          >
+            <span class="slot-number">0{{ index + 1 }}</span
+            ><component
+              :is="biome.icon"
+              :size="25"
+              :stroke-width="1.6"
+            /><span>{{ biome.name }}</span>
+          </button>
+        </fieldset>
       </div>
       <div class="world-status">
         <span class="status-dot" />
