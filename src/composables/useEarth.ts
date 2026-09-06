@@ -137,6 +137,10 @@ export function useEarth(container: Ref<HTMLDivElement | null>) {
     }
   }
 
+  function reload() {
+    window.location.reload();
+  }
+
   return {
     ready,
     error,
@@ -152,5 +156,6 @@ export function useEarth(container: Ref<HTMLDivElement | null>) {
     reset,
     zoom,
     onKeydown,
+    reload,
   };
 }

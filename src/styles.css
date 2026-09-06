@@ -672,6 +672,14 @@ a {
 .loading-cube {
   animation: block-spin 3s linear infinite;
 }
+.retry-button {
+  border: 1px solid #78945f;
+  background: #263820;
+  padding: 9px 17px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
 @keyframes block-spin {
   0% {
     transform: rotateY(0) translateY(0);
