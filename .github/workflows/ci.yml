@@ -26,4 +26,4 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm test
-      - run: npm run build -- --base=/earthcraft/
+      - run: npm run build -- --base=/planetcraft/

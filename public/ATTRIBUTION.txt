@@ -1,5 +1,5 @@
-Earthcraft uses Natural Earth 1:110m physical land data.
+Planetcraft uses Natural Earth 1:110m physical land data.
 Source: https://github.com/nvkelso/natural-earth-vector/blob/master/geojson/ne_110m_land.geojson
 License: Public domain. https://www.naturalearthdata.com/about/terms-of-use/
 Biomes and elevations are stylized artistic interpretations, not authoritative geospatial data.
-Earthcraft is an independent project and is not affiliated with Mojang or Microsoft.
+Planetcraft is an independent project and is not affiliated with Mojang or Microsoft.

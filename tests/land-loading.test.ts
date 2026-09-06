@@ -6,7 +6,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-it.each(['/', '/earthcraft/'])(
+it.each(['/', '/planetcraft/'])(
   'loads land data inside the %s deployment',
   async (base) => {
     vi.stubEnv('BASE_URL', base);

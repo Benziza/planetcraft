@@ -135,6 +135,6 @@ describe('planet navigation', () => {
     expect(window.location.hash).toBe('#/earth');
     expect(view.find('.earth-canvas').exists()).toBe(true);
     expect(view.get('select').element.value).toBe('earth');
-    expect(document.title).toBe('Earthcraft — A world in blocks');
+    expect(document.title).toBe('Planetcraft — Worlds in blocks');
   });
 });

@@ -6,7 +6,7 @@ const homeUrl = import.meta.env.BASE_URL;
 
 <template>
   <header class="topbar" :class="{ 'with-planet-picker': !!$slots.default }">
-    <a class="brand" :href="homeUrl" aria-label="Earthcraft home">
+    <a class="brand" :href="homeUrl" aria-label="Planetcraft home">
       <img
         class="brand-mark"
         :src="`${homeUrl}favicon.svg`"
@@ -14,11 +14,11 @@ const homeUrl = import.meta.env.BASE_URL;
         width="38"
         height="40"
       />
-      <span>earthcraft<span class="brand-period">.</span></span>
+      <span>planetcraft<span class="brand-period">.</span></span>
     </a>
     <slot />
     <div class="header-right">
-      <span class="edition">A WORLD IN BLOCKS</span><HelpDialog />
+      <span class="edition">WORLDS IN BLOCKS</span><HelpDialog />
     </div>
   </header>
 </template>

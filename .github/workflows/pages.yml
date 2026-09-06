@@ -26,7 +26,9 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm test
-      - run: npm run build -- --base=/earthcraft/
+      - run: npm run build -- --base="/${REPOSITORY_NAME}/"
+        env:
+          REPOSITORY_NAME: ${{ github.event.repository.name }}
       - uses: actions/upload-pages-artifact@v5
         with:
           path: dist
