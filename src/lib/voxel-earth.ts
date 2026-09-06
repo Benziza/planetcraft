@@ -155,7 +155,21 @@ export async function createEarth(container: HTMLElement, signal: AbortSignal, c
   cloudBlocks.forEach((block, i) => { dummy.position.copy(block.position); dummy.scale.copy(block.scale); dummy.updateMatrix(); clouds.setMatrixAt(i, dummy.matrix); });
   clouds.instanceMatrix.needsUpdate = true; clouds.computeBoundingSphere(); planet.add(clouds);
 
+  const starPositions: number[] = [];
+  for (let i = 0; i < 650; i++) {
+    const theta = noise(i, 1, 0) * Math.PI * 2, phi = Math.acos(2 * noise(i, 2, 1) - 1), r = 35 + noise(i, 0, 2) * 20;
+    starPositions.push(r * Math.sin(phi) * Math.cos(theta), r * Math.cos(phi), r * Math.sin(phi) * Math.sin(theta));
+  }
+  const starGeometry = new THREE.BufferGeometry(); starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starPositions, 3));
+  const starMaterial = new THREE.PointsMaterial({ color: '#aac4c3', size: .035, transparent: true, opacity: .65, sizeAttenuation: true });
+  scene.add(new THREE.Points(starGeometry, starMaterial));
+
+  const orbitGeometry = new THREE.BufferGeometry().setFromPoints(Array.from({ length: 161 }, (_, i) => { const a = i / 160 * Math.PI * 2; return new THREE.Vector3(Math.cos(a) * 4.15, 0, Math.sin(a) * 4.15); }));
+  const orbitMaterial = new THREE.LineDashedMaterial({ color: '#55756e', transparent: true, opacity: .24, dashSize: .07, gapSize: .08 });
+  const orbit = new THREE.Line(orbitGeometry, orbitMaterial); orbit.computeLineDistances(); orbit.rotation.z = -.19; scene.add(orbit);
+
   let requestedRotation = true;
+  let nightTarget = false;
   let frame = 0;
   let lastTime = performance.now();
   let disposed = false;
@@ -164,6 +178,11 @@ export async function createEarth(container: HTMLElement, signal: AbortSignal, c
   const animate = (time: number) => {
     if (disposed) return;
     const delta = Math.min((time - lastTime) / 1000, .05); lastTime = time;
+    const blend = 1 - Math.exp(-delta * 4);
+    sun.intensity = THREE.MathUtils.lerp(sun.intensity, nightTarget ? .14 : 3.7, blend);
+    fill.intensity = THREE.MathUtils.lerp(fill.intensity, nightTarget ? .52 : 2.35, blend);
+    rim.intensity = THREE.MathUtils.lerp(rim.intensity, nightTarget ? 2.8 : 2, blend);
+    starMaterial.opacity = THREE.MathUtils.lerp(starMaterial.opacity, nightTarget ? 1 : .65, blend);
     controls.autoRotate = requestedRotation;
     controls.update(delta);
     renderer.render(scene, camera);
@@ -175,7 +194,7 @@ export async function createEarth(container: HTMLElement, signal: AbortSignal, c
 
   return {
     blockCount: cells.length + foliage.length + cloudBlocks.length,
-    setNight: () => undefined,
+    setNight: value => { nightTarget = value; },
     setClouds: value => { clouds.visible = value; },
     setRotate: value => { requestedRotation = value; },
     focus: () => undefined,
@@ -185,7 +204,7 @@ export async function createEarth(container: HTMLElement, signal: AbortSignal, c
     dispose: () => {
       if (disposed) return; disposed = true; cancelAnimationFrame(frame); observer.disconnect();
       controls.removeEventListener('start', interact); controls.dispose();
-      geometry.dispose(); material.dispose(); texture.dispose(); cloudMaterial.dispose(); earth.dispose(); trees.dispose(); clouds.dispose(); renderer.dispose(); renderer.domElement.remove();
+      geometry.dispose(); material.dispose(); texture.dispose(); cloudMaterial.dispose(); starGeometry.dispose(); starMaterial.dispose(); orbitGeometry.dispose(); orbitMaterial.dispose(); earth.dispose(); trees.dispose(); clouds.dispose(); renderer.dispose(); renderer.domElement.remove();
     },
   };
 }

@@ -1,9 +1,18 @@
-import { onBeforeUnmount, onMounted, ref, watch, type Ref } from 'vue';
+import {
+  computed,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  watch,
+  type Ref,
+} from 'vue';
 import type { EarthAPI } from '../lib/voxel-earth';
 
 export function useEarth(container: Ref<HTMLDivElement | null>) {
   const ready = ref(false);
   const error = ref(false);
+  const lighting = ref('day');
+  const night = computed(() => lighting.value === 'night');
   const clouds = ref(true);
   const rotating = ref(true);
   const count = ref(0);
@@ -13,6 +22,7 @@ export function useEarth(container: Ref<HTMLDivElement | null>) {
   let reducedMotion = false;
   const controller = new AbortController();
 
+  watch(night, (value) => api?.setNight(value));
   watch(clouds, (value) => api?.setClouds(value));
   watch(rotating, (value) => api?.setRotate(value));
 
@@ -36,6 +46,7 @@ export function useEarth(container: Ref<HTMLDivElement | null>) {
       }
       api = current;
       // Settings can change while the scene/data are loading.
+      api.setNight(night.value);
       api.setClouds(clouds.value);
       api.setRotate(rotating.value);
       count.value = current.blockCount;
@@ -52,5 +63,5 @@ export function useEarth(container: Ref<HTMLDivElement | null>) {
     api = null;
   });
 
-  return { ready, error, clouds, rotating, count };
+  return { ready, error, lighting, night, clouds, rotating, count };
 }

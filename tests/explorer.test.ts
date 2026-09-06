@@ -85,6 +85,18 @@ describe('Vue Earth explorer', () => {
     },
   );
 
+  it('updates the scene from the Vue lighting and cloud controls', async () => {
+    const view = await start();
+    await view.get('[role="radio"][value="night"]').trigger('click');
+    expect(view.get('main').classes()).toContain('is-night');
+    expect(api.setNight).toHaveBeenLastCalledWith(true);
+    await view.get('[role="radio"][value="day"]').trigger('click');
+    expect(view.get('main').classes()).not.toContain('is-night');
+    expect(api.setNight).toHaveBeenLastCalledWith(false);
+    await view.get('button[aria-label="Show clouds"]').trigger('click');
+    expect(api.setClouds).toHaveBeenLastCalledWith(false);
+  });
+
   it('keeps the rotation switch in sync after a drag', async () => {
     const view = await start();
     callbacks().onInteract();
