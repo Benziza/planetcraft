@@ -1,6 +1,7 @@
+<script setup lang="ts">
+import EarthExplorer from './components/EarthExplorer.vue';
+</script>
+
 <template>
-  <main>
-    <h1>Earthcraft</h1>
-    <p>Explore a world of blocks.</p>
-  </main>
+  <EarthExplorer />
 </template>

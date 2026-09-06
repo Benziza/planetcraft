@@ -1,0 +1,132 @@
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+
+export type BiomeId = 'forest' | 'desert' | 'ocean' | 'snow' | 'mountain';
+export type EarthAPI = {
+  blockCount: number;
+  setNight: (value: boolean) => void;
+  setClouds: (value: boolean) => void;
+  setRotate: (value: boolean) => void;
+  focus: (lat: number, lon: number) => void;
+  reset: () => void;
+  zoom: (direction: number) => void;
+  key: (key: string) => void;
+  dispose: () => void;
+};
+type Cell = { x: number; y: number; z: number; biome: BiomeId; lat: number; lon: number };
+type Callbacks = { onSelect: (biome: BiomeId, lat: number, lon: number) => void; onInteract: () => void };
+
+const palette = { ocean: '#2675a6', forest: '#629441', desert: '#d3b879', snow: '#d7e6e5', mountain: '#8f9181' };
+const radians = Math.PI / 180;
+function noise(x: number, y: number, z: number) { const value = Math.sin(x * 127.1 + y * 311.7 + z * 74.7) * 43758.5453; return value - Math.floor(value); }
+
+export async function createEarth(container: HTMLElement, signal: AbortSignal, callbacks: Callbacks): Promise<EarthAPI> {
+  if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
+  const getBiome = (_lat: number, _lon: number): BiomeId => 'ocean';
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(37, 1, 0.1, 120);
+  const initial = new THREE.Vector3(0, 1.5, 11.5);
+  camera.position.copy(initial);
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+  renderer.setClearColor(0x000000, 0);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.35;
+  container.appendChild(renderer.domElement);
+  renderer.domElement.setAttribute('aria-hidden', 'true');
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true; controls.dampingFactor = 0.06;
+  controls.enablePan = false; controls.minDistance = 6.6; controls.maxDistance = 18;
+  controls.autoRotate = true; controls.autoRotateSpeed = 0.32;
+  controls.rotateSpeed = 0.6; controls.zoomSpeed = 0.65;
+  controls.minPolarAngle = 0.12; controls.maxPolarAngle = Math.PI - 0.12;
+
+  const planet = new THREE.Group();
+  scene.add(planet);
+  const fill = new THREE.HemisphereLight('#c8e5ff', '#132b36', 2.35);
+  scene.add(fill);
+  const sun = new THREE.DirectionalLight('#fff3d3', 3.7);
+  sun.position.set(-5, 7, 6); scene.add(sun);
+  const rim = new THREE.DirectionalLight('#74bafa', 2.0);
+  rim.position.set(4, 0, -5); scene.add(rim);
+
+  const textureCanvas = document.createElement('canvas');
+  textureCanvas.width = 16; textureCanvas.height = 16;
+  const textureCtx = textureCanvas.getContext('2d')!;
+  for (let x = 0; x < 16; x++) for (let y = 0; y < 16; y++) {
+    const c = Math.round(207 + noise(x, y, 4) * 48);
+    textureCtx.fillStyle = `rgb(${c},${c},${c})`; textureCtx.fillRect(x, y, 1, 1);
+  }
+  const texture = new THREE.CanvasTexture(textureCanvas);
+  texture.magFilter = THREE.NearestFilter; texture.minFilter = THREE.NearestFilter;
+  texture.colorSpace = THREE.SRGBColorSpace;
+  const geometry = new THREE.BoxGeometry(1, 1, 1);
+  const material = new THREE.MeshStandardMaterial({ map: texture, roughness: 1, metalness: 0 });
+  const radius = 25, size = 0.119, bound = radius + 3, width = bound * 2 + 1;
+  const filled = new Uint8Array(width ** 3);
+  const address = (x: number, y: number, z: number) => (x + bound) * width * width + (y + bound) * width + z + bound;
+  for (let x = -bound + 1; x < bound; x++) for (let y = -bound + 1; y < bound; y++) for (let z = -bound + 1; z < bound; z++) {
+    const d = Math.hypot(x, y, z);
+    if (d < radius - 1) { filled[address(x, y, z)] = 1; continue; }
+    if (d > radius + 1.6) continue;
+    const lat = Math.asin(y / d) / radians, lon = Math.atan2(x, z) / radians;
+    const biome = getBiome(lat, lon);
+    const elevation = biome === 'ocean' ? 0 : biome === 'mountain' ? 1.1 + noise(x, y, z) * 0.4 : 0.6;
+    if (d <= radius + elevation) filled[address(x, y, z)] = 1;
+  }
+  const cells: Cell[] = [];
+  const neighbors = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]];
+  for (let x = -bound + 1; x < bound; x++) for (let y = -bound + 1; y < bound; y++) for (let z = -bound + 1; z < bound; z++) {
+    if (!filled[address(x, y, z)] || neighbors.every(([a, b, c]) => filled[address(x + a, y + b, z + c)])) continue;
+    const d = Math.hypot(x, y, z), lat = Math.asin(y / d) / radians, lon = Math.atan2(x, z) / radians;
+    cells.push({ x, y, z, lat, lon, biome: getBiome(lat, lon) });
+  }
+  const earth = new THREE.InstancedMesh(geometry, material, cells.length);
+  const dummy = new THREE.Object3D();
+  const color = new THREE.Color();
+  cells.forEach((cell, i) => {
+    dummy.position.set(cell.x * size, cell.y * size, cell.z * size);
+    dummy.scale.setScalar(size); dummy.updateMatrix(); earth.setMatrixAt(i, dummy.matrix);
+    color.set(palette[cell.biome]);
+    color.multiplyScalar(0.81 + noise(cell.x, cell.y, cell.z) * 0.31);
+    if (cell.biome === 'forest' && Math.abs(cell.lat) < 10) color.multiplyScalar(0.88);
+    earth.setColorAt(i, color);
+  });
+  earth.instanceMatrix.needsUpdate = true; earth.instanceColor!.needsUpdate = true; earth.computeBoundingSphere(); planet.add(earth);
+
+  let requestedRotation = true;
+  let frame = 0;
+  let lastTime = performance.now();
+  let disposed = false;
+  function resize() { const width = container.clientWidth, height = container.clientHeight; if (!width || !height) return; camera.aspect = width / height; camera.updateProjectionMatrix(); renderer.setSize(width, height); }
+  const observer = new ResizeObserver(resize); observer.observe(container); resize();
+  const animate = (time: number) => {
+    if (disposed) return;
+    const delta = Math.min((time - lastTime) / 1000, .05); lastTime = time;
+    controls.autoRotate = requestedRotation;
+    controls.update(delta);
+    renderer.render(scene, camera);
+    frame = requestAnimationFrame(animate);
+  };
+  frame = requestAnimationFrame(animate);
+  const interact = () => { requestedRotation = false; controls.autoRotate = false; callbacks.onInteract(); };
+  controls.addEventListener('start', interact);
+
+  return {
+    blockCount: cells.length,
+    setNight: () => undefined,
+    setClouds: () => undefined,
+    setRotate: value => { requestedRotation = value; },
+    focus: () => undefined,
+    reset: () => undefined,
+    zoom: () => undefined,
+    key: () => undefined,
+    dispose: () => {
+      if (disposed) return; disposed = true; cancelAnimationFrame(frame); observer.disconnect();
+      controls.removeEventListener('start', interact); controls.dispose();
+      geometry.dispose(); material.dispose(); texture.dispose(); earth.dispose(); renderer.dispose(); renderer.domElement.remove();
+    },
+  };
+}
