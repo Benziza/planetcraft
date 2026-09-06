@@ -6,7 +6,8 @@ import {
   watch,
   type Ref,
 } from 'vue';
-import type { EarthAPI } from '../lib/voxel-earth';
+import { biomes, defaultSelection } from '../data/biomes';
+import type { BiomeId, EarthAPI } from '../lib/voxel-earth';
 
 export function useEarth(container: Ref<HTMLDivElement | null>) {
   const ready = ref(false);
@@ -15,7 +16,15 @@ export function useEarth(container: Ref<HTMLDivElement | null>) {
   const night = computed(() => lighting.value === 'night');
   const clouds = ref(true);
   const rotating = ref(true);
+  const active = ref<BiomeId | null>(null);
   const count = ref(0);
+  const selection = ref(defaultSelection());
+  const coordinates = computed(() =>
+    active.value
+      ? `${Math.abs(selection.value.lat).toFixed(1)}° ${selection.value.lat < 0 ? 'S' : 'N'} / ${Math.abs(selection.value.lon).toFixed(1)}° ${selection.value.lon < 0 ? 'W' : 'E'}`
+      : 'SEED: HOME SWEET HOME',
+  );
+
   // Keep Three.js objects outside deep Vue reactivity.
   let api: EarthAPI | null = null;
   let disposed = false;
@@ -63,9 +72,26 @@ export function useEarth(container: Ref<HTMLDivElement | null>) {
     api = null;
   });
 
+  function focusBiome(index: number) {
+    const biome = biomes[index];
+    if (!ready.value || !biome) return;
+    active.value = biome.id;
+    rotating.value = false;
+    selection.value = {
+      name: biome.label,
+      sub: biome.text,
+      location: biome.detail.toUpperCase(),
+      lat: biome.lat,
+      lon: biome.lon,
+    };
+    api?.focus(biome.lat, biome.lon);
+  }
+
   function reset() {
     if (!ready.value) return;
     api?.reset();
+    active.value = null;
+    selection.value = defaultSelection();
     reducedMotion = window.matchMedia(
       '(prefers-reduced-motion: reduce)',
     ).matches;
@@ -83,7 +109,11 @@ export function useEarth(container: Ref<HTMLDivElement | null>) {
     night,
     clouds,
     rotating,
+    active,
     count,
+    selection,
+    coordinates,
+    focusBiome,
     reset,
     zoom,
   };

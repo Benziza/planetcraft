@@ -328,6 +328,96 @@ a {
   margin: 2px auto;
   background: #ffffff13;
 }
+.discovery-card {
+  position: absolute;
+  left: 4.3%;
+  bottom: 40px;
+  width: 296px;
+  border: 1px solid #42503e;
+  padding: 18px 20px 0;
+  background: linear-gradient(125deg, #1a241bea, #101813ea);
+  box-shadow: 4px 4px 0 #050a0780;
+}
+.discovery-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font:
+    12px var(--font-geist-mono),
+    monospace;
+  letter-spacing: 1px;
+  color: #97ac8a;
+}
+.discovery-label svg {
+  margin-left: auto;
+  color: #839779;
+}
+.tiny-cross {
+  font-size: 16px;
+  color: #b6e58c;
+}
+.discovery-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 17px;
+}
+.discovery-title h2 {
+  font-size: 18px;
+  font-weight: 550;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+.biome-chip {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  background: #33442a;
+  border: 1px solid #69825766;
+  color: #afd08f;
+  box-shadow: inset 0 -4px 0 #0002;
+}
+.biome-chip.desert {
+  color: #dac18b;
+  background: #493d26;
+}
+.biome-chip.ocean {
+  color: #97cce9;
+  background: #244552;
+}
+.biome-chip.snow {
+  color: #d9e6e7;
+  background: #39494d;
+}
+.biome-chip.mountain {
+  color: #c7c7b7;
+  background: #404039;
+}
+.discovery-card > p {
+  color: #95a18d;
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 13px 0 19px;
+}
+.discovery-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #ffffff10;
+  margin: 0 -20px;
+  padding: 11px 20px;
+  color: #7f9174;
+  font:
+    12px var(--font-geist-mono),
+    monospace;
+  letter-spacing: 0.8px;
+}
+.small-dot {
+  width: 5px;
+  height: 5px;
+  border: 1px solid #809b69;
+}
 .orbit-caption {
   position: absolute;
   bottom: 109px;
@@ -408,6 +498,83 @@ a {
   height: 11px;
   width: 11px;
   margin: 2px;
+}
+.biome-caption {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  font:
+    12px var(--font-geist-mono),
+    monospace;
+  letter-spacing: 1px;
+  color: #91a485;
+  margin-bottom: 10px;
+}
+.biome-caption > span {
+  color: #6d7b67;
+  font-size: 12px;
+}
+.hotbar {
+  margin: 0;
+  min-width: 0;
+  display: flex;
+  padding: 5px;
+  gap: 5px;
+  background: #0a100d;
+  border: 1px solid #35422f;
+  border-radius: 4px;
+  box-shadow: 0 4px 0 #080d0a;
+}
+.biome-button {
+  position: relative;
+  height: 74px;
+  width: 77px;
+  border: 1px solid #ffffff0f;
+  border-radius: 2px;
+  background: linear-gradient(#20291f, #182016);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--biome-color);
+  box-shadow: inset 0 -3px 0 #080d094d;
+  transition:
+    transform 0.15s,
+    background 0.15s,
+    border-color 0.15s;
+}
+.biome-button > span:last-child {
+  color: #b2bca9;
+  font-size: 12px;
+}
+.biome-button svg {
+  filter: drop-shadow(0 2px 0 #0005);
+}
+.biome-button:hover {
+  transform: translateY(-3px);
+  background: #2d3b26;
+  border-color: #9abe7b77;
+}
+.biome-button.selected {
+  background: #304428;
+  border: 1px solid #b6e58c;
+  box-shadow:
+    inset 0 0 0 1px #b6e58c30,
+    0 0 12px #a6d6790b;
+}
+.biome-button.selected > span:last-child {
+  color: #d5edc0;
+}
+.slot-number {
+  position: absolute;
+  top: 4px;
+  left: 5px;
+  font:
+    12px var(--font-geist-mono),
+    monospace;
+  color: #839175;
+  opacity: 0.6;
 }
 .world-status {
   justify-self: end;
