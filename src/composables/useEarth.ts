@@ -49,5 +49,5 @@ export function useEarth(container: Ref<HTMLDivElement | null>) {
     api = null;
   });
 
-  return { ready, error, count };
+  return { ready, error, rotating, count };
 }

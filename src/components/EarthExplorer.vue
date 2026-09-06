@@ -1,11 +1,19 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Box, Compass, Globe2, MousePointer2, Move } from '@lucide/vue';
+import {
+  Box,
+  Compass,
+  Globe2,
+  MousePointer2,
+  Move,
+  Rotate3D,
+} from '@lucide/vue';
 import { useEarth } from '../composables/useEarth';
+import WorldSwitch from './WorldSwitch.vue';
 
 const container = ref<HTMLDivElement | null>(null);
 const homeUrl = import.meta.env.BASE_URL;
-const { ready, error, count } = useEarth(container);
+const { ready, error, rotating, count } = useEarth(container);
 </script>
 
 <template>
@@ -70,6 +78,12 @@ const { ready, error, count } = useEarth(container);
     </section>
 
     <section class="control-deck" aria-label="World settings">
+      <div class="settings-group">
+        <label for="auto-rotate"
+          ><Rotate3D :size="17" /><span>Auto-rotate</span
+          ><WorldSwitch id="auto-rotate" v-model="rotating" label="Auto-rotate"
+        /></label>
+      </div>
       <div class="world-status">
         <span class="status-dot" />
         <div>
