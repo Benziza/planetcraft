@@ -63,9 +63,28 @@ export function useEarth(container: Ref<HTMLDivElement | null>) {
     api = null;
   });
 
+  function reset() {
+    if (!ready.value) return;
+    api?.reset();
+    reducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
+    rotating.value = !reducedMotion;
+  }
+
   function zoom(direction: number) {
     api?.zoom(direction);
   }
 
-  return { ready, error, lighting, night, clouds, rotating, count, zoom };
+  return {
+    ready,
+    error,
+    lighting,
+    night,
+    clouds,
+    rotating,
+    count,
+    reset,
+    zoom,
+  };
 }

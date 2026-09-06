@@ -119,6 +119,16 @@ describe('Vue Earth explorer', () => {
     expect(api.setRotate).toHaveBeenLastCalledWith(false);
   });
 
+  it('respects reduced motion on initialization and reset', async () => {
+    reducedMotion = true;
+    const view = await start();
+    expect(api.setRotate).toHaveBeenLastCalledWith(false);
+    await view.get('button[aria-label="Auto-rotate"]').trigger('click');
+    expect(api.setRotate).toHaveBeenLastCalledWith(true);
+    await view.get('button[aria-label="Reset view"]').trigger('click');
+    expect(api.setRotate).toHaveBeenLastCalledWith(false);
+  });
+
   it('disposes an initialized scene once on unmount', async () => {
     const view = await start();
     view.unmount();
