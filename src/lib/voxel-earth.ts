@@ -123,6 +123,20 @@ export async function createEarth(container: HTMLElement, signal: AbortSignal, c
   });
   earth.instanceMatrix.needsUpdate = true; earth.instanceColor!.needsUpdate = true; earth.computeBoundingSphere(); planet.add(earth);
 
+  type Block = { position: THREE.Vector3; scale: THREE.Vector3; color: string };
+  const foliage: Block[] = [];
+  for (const cell of cells) {
+    if (cell.biome !== 'forest' || noise(cell.z, cell.x, cell.y) > 0.017) continue;
+    const normal = new THREE.Vector3(cell.x, cell.y, cell.z).normalize();
+    const base = new THREE.Vector3(cell.x, cell.y, cell.z).multiplyScalar(size);
+    for (let t = 1; t <= 2; t++) foliage.push({ position: base.clone().addScaledVector(normal, size * t * .75), scale: new THREE.Vector3(.057, .057, .057), color: '#705637' });
+    foliage.push({ position: base.clone().addScaledVector(normal, size * 2), scale: new THREE.Vector3(.19, .18, .19), color: '#3c6b32' });
+    foliage.push({ position: base.clone().addScaledVector(normal, size * 2.8), scale: new THREE.Vector3(.12, .12, .12), color: '#54843b' });
+  }
+  const trees = new THREE.InstancedMesh(geometry, material, foliage.length);
+  foliage.forEach((block, i) => { dummy.position.copy(block.position); dummy.scale.copy(block.scale); dummy.updateMatrix(); trees.setMatrixAt(i, dummy.matrix); trees.setColorAt(i, color.set(block.color)); });
+  trees.instanceMatrix.needsUpdate = true; if (trees.instanceColor) trees.instanceColor.needsUpdate = true; trees.computeBoundingSphere(); planet.add(trees);
+
   let requestedRotation = true;
   let frame = 0;
   let lastTime = performance.now();
@@ -142,7 +156,7 @@ export async function createEarth(container: HTMLElement, signal: AbortSignal, c
   controls.addEventListener('start', interact);
 
   return {
-    blockCount: cells.length,
+    blockCount: cells.length + foliage.length,
     setNight: () => undefined,
     setClouds: () => undefined,
     setRotate: value => { requestedRotation = value; },
@@ -153,7 +167,7 @@ export async function createEarth(container: HTMLElement, signal: AbortSignal, c
     dispose: () => {
       if (disposed) return; disposed = true; cancelAnimationFrame(frame); observer.disconnect();
       controls.removeEventListener('start', interact); controls.dispose();
-      geometry.dispose(); material.dispose(); texture.dispose(); earth.dispose(); renderer.dispose(); renderer.domElement.remove();
+      geometry.dispose(); material.dispose(); texture.dispose(); earth.dispose(); trees.dispose(); renderer.dispose(); renderer.domElement.remove();
     },
   };
 }
