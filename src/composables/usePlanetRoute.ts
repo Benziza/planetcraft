@@ -1,0 +1,42 @@
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { planets } from '../data/planets';
+
+function readPlanet() {
+  const hash = window.location.hash;
+  if (!hash || hash === '#/') return 'earth';
+  return /^#\/([a-z]+)\/?$/.exec(hash)?.[1] ?? 'unknown';
+}
+
+export function usePlanetRoute() {
+  const planetId = ref(readPlanet());
+  const planet = computed(() =>
+    planets.find((item) => item.id === planetId.value),
+  );
+  const planetName = computed(() => planet.value?.name ?? 'Unknown planet');
+
+  function syncRoute() {
+    planetId.value = readPlanet();
+  }
+
+  function choosePlanet(id: string) {
+    if (!planets.some((item) => item.id === id)) return;
+    window.location.hash = `/${id}`;
+    syncRoute();
+  }
+
+  watch(
+    planetId,
+    () => {
+      document.title =
+        planetId.value === 'earth'
+          ? 'Earthcraft — A world in blocks'
+          : `${planetName.value} — 404 Not Found | Earthcraft`;
+    },
+    { immediate: true },
+  );
+
+  onMounted(() => window.addEventListener('hashchange', syncRoute));
+  onBeforeUnmount(() => window.removeEventListener('hashchange', syncRoute));
+
+  return { planetId, planetName, choosePlanet };
+}

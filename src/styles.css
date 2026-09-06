@@ -96,28 +96,6 @@ a {
 .brand-period {
   color: var(--primary);
 }
-.nav-current {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 14px;
-  height: 86px;
-  color: #d9e4d5;
-  border-bottom: 2px solid #b6e58c;
-  padding: 0 10px;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-}
-.nav-current svg {
-  color: #b6e58c;
-}
-.nav-badge {
-  font-family: var(--font-geist-mono), monospace;
-  font-size: 12px;
-  color: #82957b;
-  margin-left: 14px;
-}
 .header-right {
   display: flex;
   align-items: center;
@@ -703,9 +681,6 @@ a {
   .brand-mark {
     width: 32px;
     height: 35px;
-  }
-  .nav-current {
-    display: none;
   }
   .help-button {
     border: none;
