@@ -736,6 +736,277 @@ a {
   line-height: 1.7;
   margin: 0;
 }
+@media (min-width: 1600px) {
+  .intro-panel {
+    top: 14%;
+  }
+  .intro-panel h1 {
+    font-size: 55px;
+  }
+  .discovery-card {
+    bottom: 65px;
+  }
+}
+@media (max-width: 1150px) {
+  .edition {
+    display: none;
+  }
+  .intro-panel {
+    width: 290px;
+    top: 90px;
+  }
+  .intro-panel h1 {
+    font-size: 33px;
+  }
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+  .intro-panel p {
+    font-size: 14px;
+  }
+  .discovery-card {
+    width: 265px;
+  }
+  .world-status {
+    display: none;
+  }
+  .control-deck {
+    grid-template-columns: 1fr auto;
+  }
+  .biome-picker {
+    margin-right: 5%;
+  }
+  .earth-canvas {
+    left: 25%;
+    right: -5%;
+  }
+  .coord-top span:last-child {
+    display: none;
+  }
+  .coord-top {
+    left: 42%;
+  }
+  .orbit-caption {
+    right: 7%;
+  }
+}
+@media (max-width: 760px) {
+  .topbar {
+    height: 70px;
+    padding: 0 22px;
+  }
+  .brand {
+    font-size: 23px;
+    gap: 9px;
+  }
+  .brand-mark {
+    width: 32px;
+    height: 35px;
+  }
+  .nav-current {
+    display: none;
+  }
+  .help-button {
+    border: none;
+    font-size: 12px;
+    gap: 6px;
+  }
+  .explorer {
+    height: 850px;
+    min-height: 0;
+  }
+  .intro-panel {
+    left: 24px;
+    top: 30px;
+    width: 100%;
+  }
+  .intro-panel h1 {
+    font-size: clamp(26px, 5.8vw, 39px);
+    line-height: 1.2;
+    margin: 16px 0 12px;
+  }
+  .intro-panel h1 br:nth-child(1) {
+    display: none;
+  }
+  .intro-panel h1 br:nth-child(1):after {
+    content: ' ';
+  }
+  .intro-panel h1 {
+    letter-spacing: -1.8px;
+  }
+  .intro-panel p {
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .desktop-break {
+    display: none;
+  }
+  .intro-rule,
+  .explore-note {
+    display: none;
+  }
+  .earth-canvas {
+    left: -8%;
+    right: -8%;
+    top: 176px;
+    bottom: 125px;
+  }
+  .coord-top {
+    top: 251px;
+    left: 24px;
+    font-size: 12px;
+  }
+  .time-tabs {
+    top: 201px;
+    right: 22px;
+  }
+  .time-list {
+    height: 35px !important;
+  }
+  .time-button {
+    height: 27px !important;
+    font-size: 12px !important;
+    padding: 0 10px !important;
+  }
+  .world-tools {
+    right: 17px;
+    top: 393px;
+  }
+  .world-tools button {
+    width: 30px;
+    height: 35px;
+  }
+  .discovery-card {
+    left: 24px;
+    bottom: 18px;
+    width: calc(100% - 48px);
+    padding-top: 13px;
+  }
+  .discovery-title {
+    margin-top: 9px;
+  }
+  .discovery-card > p {
+    margin: 8px 0 12px;
+  }
+  .discovery-bottom {
+    padding-top: 9px;
+    padding-bottom: 9px;
+  }
+  .discovery-label {
+    font-size: 12px;
+  }
+  .discovery-title h2 {
+    font-size: 17px;
+  }
+  .biome-chip {
+    width: 30px;
+    height: 30px;
+  }
+  .biome-chip svg {
+    width: 18px;
+  }
+  .orbit-caption {
+    display: none;
+  }
+  .world-hint {
+    left: 50%;
+    bottom: 192px;
+    font-size: 12px;
+  }
+  .world-loading {
+    left: 50%;
+    top: 49%;
+  }
+  .control-deck {
+    padding: 20px 22px 25px;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 26px;
+  }
+  .biome-picker {
+    margin: 0;
+    width: 100%;
+    max-width: 445px;
+  }
+  .hotbar {
+    justify-content: stretch;
+    gap: 4px;
+  }
+  .biome-button {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+    height: 71px;
+  }
+  .biome-button > span:last-child {
+    font-size: 12px;
+  }
+  .biome-caption {
+    font-size: 12px;
+    letter-spacing: 0.7px;
+  }
+  .biome-caption > span {
+    font-size: 12px;
+  }
+  .settings-group {
+    width: 100%;
+    max-width: 430px;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 18px;
+  }
+  .settings-group label {
+    font-size: 12px;
+    gap: 8px;
+  }
+  .settings-group [data-slot='switch'] {
+    margin-left: 5px;
+  }
+  .footer {
+    padding: 18px 24px;
+    min-height: 60px;
+    font-size: 12px;
+  }
+  .footer > span:nth-child(2) {
+    display: none;
+  }
+  .footer > span:last-child {
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .footer-version {
+    margin-left: 4px;
+  }
+}
+@media (max-width: 390px) {
+  .help-button span {
+    display: none;
+  }
+  .explorer {
+    height: 805px;
+  }
+  .intro-panel h1 {
+    font-size: 26px;
+  }
+  .earth-canvas {
+    top: 170px;
+    bottom: 150px;
+  }
+  .world-tools {
+    top: 350px;
+  }
+  .world-hint {
+    bottom: 185px;
+  }
+  .biome-caption > span {
+    display: none;
+  }
+  .settings-group label {
+    font-size: 12px;
+    gap: 6px;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   *,
   *:before,
@@ -746,7 +1017,16 @@ a {
   }
 }
 
-/* Shared control styles. */
+@media (max-width: 760px) {
+  .biome-caption > span {
+    display: none;
+  }
+  .footer {
+    flex-wrap: wrap;
+  }
+}
+
+/* Vue control styles. */
 svg {
   display: block;
   flex-shrink: 0;
