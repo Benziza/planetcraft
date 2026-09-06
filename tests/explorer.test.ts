@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { flushPromises, mount, type VueWrapper } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import EarthExplorer from '../src/components/EarthExplorer.vue';
-import type { EarthAPI } from '../src/lib/voxel-earth';
+import type { createEarth, EarthAPI } from '../src/lib/voxel-earth';
 
 const { createEarthMock } = vi.hoisted(() => ({ createEarthMock: vi.fn() }));
 vi.mock('../src/lib/voxel-earth', () => ({ createEarth: createEarthMock }));
@@ -67,6 +68,12 @@ describe('Vue Earth explorer', () => {
     return wrapper;
   }
 
+  function callbacks() {
+    return createEarthMock.mock.calls[0][2] as Parameters<
+      typeof createEarth
+    >[2];
+  }
+
   it.each(['/', '/earthcraft/'])(
     'keeps the home link inside the %s deployment',
     async (base) => {
@@ -77,6 +84,16 @@ describe('Vue Earth explorer', () => {
       ).toBe(base);
     },
   );
+
+  it('keeps the rotation switch in sync after a drag', async () => {
+    const view = await start();
+    callbacks().onInteract();
+    await nextTick();
+    expect(
+      view.get('button[aria-label="Auto-rotate"]').attributes('aria-checked'),
+    ).toBe('false');
+    expect(api.setRotate).toHaveBeenLastCalledWith(false);
+  });
 
   it('disposes an initialized scene once on unmount', async () => {
     const view = await start();

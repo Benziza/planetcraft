@@ -321,6 +321,34 @@ a {
   gap: 20px;
   padding: 19px 4.3% 20px;
 }
+.settings-group {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 186px;
+}
+.settings-group label {
+  display: flex;
+  gap: 11px;
+  align-items: center;
+  font-size: 13px;
+  color: #acb7a7;
+}
+.settings-group label svg {
+  color: #83917d;
+}
+.settings-group [data-slot='switch'] {
+  margin-left: auto;
+  border-radius: 2px !important;
+  height: 17px;
+  width: 30px;
+}
+.settings-group [data-slot='switch-thumb'] {
+  border-radius: 1px !important;
+  height: 11px;
+  width: 11px;
+  margin: 2px;
+}
 .world-status {
   justify-self: end;
   display: flex;
@@ -434,6 +462,28 @@ h2,
 h3,
 p {
   margin-top: 0;
+}
+.settings-group [data-slot='switch'] {
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  background: #364139;
+  border: 1px solid transparent;
+  transition: background 0.15s;
+}
+.settings-group [data-slot='switch'][data-state='checked'] {
+  background: #b6e58c;
+}
+.settings-group [data-slot='switch-thumb'] {
+  display: block;
+  background: #e7ede6;
+  transition: transform 0.15s;
+  transform: translateX(0);
+}
+.settings-group [data-slot='switch-thumb'][data-state='checked'] {
+  background: #162611;
+  transform: translateX(12px);
 }
 @media (prefers-reduced-motion: reduce) {
   .settings-group [data-slot='switch'],
