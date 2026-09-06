@@ -1,7 +1,9 @@
-# Earthcraft
+# Planetcraft
 
-Explore Earth as a world of blocks, inspired by Minecraft.
+Explore a universe of blocks, inspired by Minecraft.
 
-Turn the planet, zoom in on different landscapes, and switch between day and night.
+Choose a planet and start exploring. Earth is ready: give it a spin, discover its landscapes, and switch between day and night.
 
-[Explore Earthcraft](https://benziza.github.io/earthcraft/)
+The other planets are still waiting for their first blocks.
+
+[Explore Planetcraft](https://benziza.github.io/planetcraft/)

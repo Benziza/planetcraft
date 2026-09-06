@@ -29,8 +29,8 @@ export function usePlanetRoute() {
     () => {
       document.title =
         planetId.value === 'earth'
-          ? 'Earthcraft — A world in blocks'
-          : `${planetName.value} — 404 Not Found | Earthcraft`;
+          ? 'Planetcraft — Worlds in blocks'
+          : `${planetName.value} — 404 Not Found | Planetcraft`;
     },
     { immediate: true },
   );

@@ -194,7 +194,7 @@ const {
     <footer class="footer">
       <span>A little perspective goes a long way.</span
       ><span><Compass :size="13" /> BUILT FOR THE WANDERER IN YOU</span
-      ><span>EARTHCRAFT <span class="footer-version">V.01</span></span>
+      ><span>PLANETCRAFT <span class="footer-version">V.01</span></span>
     </footer>
   </main>
 </template>

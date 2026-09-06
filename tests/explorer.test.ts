@@ -84,13 +84,13 @@ describe('Vue Earth explorer', () => {
     >[2];
   }
 
-  it.each(['/', '/earthcraft/'])(
+  it.each(['/', '/planetcraft/'])(
     'keeps the home link inside the %s deployment',
     async (base) => {
       vi.stubEnv('BASE_URL', base);
       const view = await start();
       expect(
-        view.get('a[aria-label="Earthcraft home"]').attributes('href'),
+        view.get('a[aria-label="Planetcraft home"]').attributes('href'),
       ).toBe(base);
     },
   );
