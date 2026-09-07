@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { marsPalette, sampleMars, type MarsBiomeId } from './mars-terrain';
 
-export type BiomeId = 'forest' | 'desert' | 'ocean' | 'snow' | 'mountain';
+export type BiomeId = 'forest' | 'desert' | 'ocean' | 'snow' | 'mountain' | MarsBiomeId;
 export type EarthAPI = {
   blockCount: number;
   setNight: (value: boolean) => void;
@@ -17,11 +18,16 @@ type Cell = { x: number; y: number; z: number; biome: BiomeId; lat: number; lon:
 type Callbacks = { onSelect: (biome: BiomeId, lat: number, lon: number) => void; onInteract: () => void };
 type Land = { features: { geometry: { type: string; coordinates: number[][][] | number[][][][] } }[] };
 
-const palette = { ocean: '#2675a6', forest: '#629441', desert: '#d3b879', snow: '#d7e6e5', mountain: '#8f9181' };
+const palette = { ocean: '#2675a6', forest: '#629441', desert: '#d3b879', snow: '#d7e6e5', mountain: '#8f9181', ...marsPalette };
 const radians = Math.PI / 180;
 function noise(x: number, y: number, z: number) { const value = Math.sin(x * 127.1 + y * 311.7 + z * 74.7) * 43758.5453; return value - Math.floor(value); }
 
-export async function createEarth(container: HTMLElement, signal: AbortSignal, callbacks: Callbacks): Promise<EarthAPI> {
+export async function createEarth(container: HTMLElement, signal: AbortSignal, callbacks: Callbacks, planetId: 'earth' | 'mars' = 'earth'): Promise<EarthAPI> {
+  const isMars = planetId === 'mars';
+  let getBiome: (lat: number, lon: number) => BiomeId;
+  if (isMars) {
+    getBiome = (lat, lon) => sampleMars(lat, lon).biome;
+  } else {
   const response = await fetch(`${import.meta.env.BASE_URL}land.geojson`, { signal });
   if (!response.ok) throw new Error('Land data unavailable');
   const land = await response.json() as Land;
@@ -43,13 +49,15 @@ export async function createEarth(container: HTMLElement, signal: AbortSignal, c
   }
   const pixels = ctx.getImageData(0, 0, 1024, 512).data;
   const isLand = (lat: number, lon: number) => pixels[(Math.min(511, Math.max(0, Math.floor((90 - lat) / 180 * 512))) * 1024 + Math.min(1023, Math.max(0, Math.floor((lon + 180) / 360 * 1024)))) * 4 + 3] > 128;
-  const getBiome = (lat: number, lon: number): BiomeId => {
+  getBiome = (lat: number, lon: number): BiomeId => {
     if (!isLand(lat, lon)) return 'ocean';
     if (lat > 69 || lat < -62 || (lon > -65 && lon < -22 && lat > 59)) return 'snow';
     if ((lat > 15 && lat < 33 && lon > -18 && lon < 61) || (lat < -19 && lat > -32 && lon > 116 && lon < 142) || (lat < -16 && lat > -29 && lon > 12 && lon < 23)) return 'desert';
     if ((lat > 27 && lat < 38 && lon > 70 && lon < 105) || (lat > -49 && lat < 0 && lon > -77 && lon < -67) || (lat > 36 && lat < 58 && lon > -125 && lon < -110)) return 'mountain';
     return 'forest';
   };
+  }
+  if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(37, 1, 0.1, 120);
@@ -72,11 +80,11 @@ export async function createEarth(container: HTMLElement, signal: AbortSignal, c
 
   const planet = new THREE.Group();
   scene.add(planet);
-  const fill = new THREE.HemisphereLight('#c8e5ff', '#132b36', 2.35);
+  const fill = new THREE.HemisphereLight(isMars ? '#ffe0c4' : '#c8e5ff', isMars ? '#351b18' : '#132b36', 2.35);
   scene.add(fill);
   const sun = new THREE.DirectionalLight('#fff3d3', 3.7);
   sun.position.set(-5, 7, 6); scene.add(sun);
-  const rim = new THREE.DirectionalLight('#74bafa', 2.0);
+  const rim = new THREE.DirectionalLight(isMars ? '#e89972' : '#74bafa', 2.0);
   rim.position.set(4, 0, -5); scene.add(rim);
 
   const textureCanvas = document.createElement('canvas');
@@ -91,16 +99,16 @@ export async function createEarth(container: HTMLElement, signal: AbortSignal, c
   texture.colorSpace = THREE.SRGBColorSpace;
   const geometry = new THREE.BoxGeometry(1, 1, 1);
   const material = new THREE.MeshStandardMaterial({ map: texture, roughness: 1, metalness: 0 });
-  const radius = 25, size = 0.119, bound = radius + 3, width = bound * 2 + 1;
+  const radius = 25, size = 0.119, bound = radius + (isMars ? 4 : 3), width = bound * 2 + 1;
   const filled = new Uint8Array(width ** 3);
   const address = (x: number, y: number, z: number) => (x + bound) * width * width + (y + bound) * width + z + bound;
   for (let x = -bound + 1; x < bound; x++) for (let y = -bound + 1; y < bound; y++) for (let z = -bound + 1; z < bound; z++) {
     const d = Math.hypot(x, y, z);
-    if (d < radius - 1) { filled[address(x, y, z)] = 1; continue; }
-    if (d > radius + 1.6) continue;
+    if (d < radius - (isMars ? 2 : 1)) { filled[address(x, y, z)] = 1; continue; }
+    if (d > radius + (isMars ? 2.8 : 1.6)) continue;
     const lat = Math.asin(y / d) / radians, lon = Math.atan2(x, z) / radians;
     const biome = getBiome(lat, lon);
-    const elevation = biome === 'ocean' ? 0 : biome === 'mountain' ? 1.1 + noise(x, y, z) * 0.4 : 0.6;
+    const elevation = isMars ? sampleMars(lat, lon).elevation : biome === 'ocean' ? 0 : biome === 'mountain' ? 1.1 + noise(x, y, z) * 0.4 : 0.6;
     if (d <= radius + elevation) filled[address(x, y, z)] = 1;
   }
   const cells: Cell[] = [];
@@ -150,7 +158,7 @@ export async function createEarth(container: HTMLElement, signal: AbortSignal, c
       cloudBlocks.push({ position: p, scale: new THREE.Vector3(.24, .14, .22), color: '#f3f4e9' });
     }
   }
-  const cloudMaterial = new THREE.MeshStandardMaterial({ roughness: 1, color: '#edf4ef' });
+  const cloudMaterial = new THREE.MeshStandardMaterial({ roughness: 1, color: isMars ? '#cc9873' : '#edf4ef', transparent: isMars, opacity: isMars ? 0.22 : 1, depthWrite: !isMars });
   const clouds = new THREE.InstancedMesh(geometry, cloudMaterial, cloudBlocks.length);
   cloudBlocks.forEach((block, i) => { dummy.position.copy(block.position); dummy.scale.copy(block.scale); dummy.updateMatrix(); clouds.setMatrixAt(i, dummy.matrix); });
   clouds.instanceMatrix.needsUpdate = true; clouds.computeBoundingSphere(); planet.add(clouds);
@@ -165,7 +173,7 @@ export async function createEarth(container: HTMLElement, signal: AbortSignal, c
   scene.add(new THREE.Points(starGeometry, starMaterial));
 
   const orbitGeometry = new THREE.BufferGeometry().setFromPoints(Array.from({ length: 161 }, (_, i) => { const a = i / 160 * Math.PI * 2; return new THREE.Vector3(Math.cos(a) * 4.15, 0, Math.sin(a) * 4.15); }));
-  const orbitMaterial = new THREE.LineDashedMaterial({ color: '#55756e', transparent: true, opacity: .24, dashSize: .07, gapSize: .08 });
+  const orbitMaterial = new THREE.LineDashedMaterial({ color: isMars ? '#99705b' : '#55756e', transparent: true, opacity: .24, dashSize: .07, gapSize: .08 });
   const orbit = new THREE.Line(orbitGeometry, orbitMaterial); orbit.computeLineDistances(); orbit.rotation.z = -.19; scene.add(orbit);
 
   let targetPosition: THREE.Vector3 | null = null;
