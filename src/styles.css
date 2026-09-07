@@ -869,6 +869,124 @@ a {
 }
 
 /* Vue control styles. */
+.is-mars {
+  --primary: #efab82;
+  --ring: #efab82;
+  --border: #45332b;
+  background: #140f0d;
+}
+.is-mars .topbar,
+.is-mars .footer {
+  background: #17110e;
+}
+.is-mars .explorer {
+  background: radial-gradient(ellipse at 65% 48%, #48271d55, transparent 60%);
+}
+.is-mars.is-night .explorer {
+  background: radial-gradient(ellipse at 65% 48%, #271b2455, transparent 60%);
+}
+.is-mars .control-deck {
+  background: #1a1310;
+}
+.is-mars .intro-panel h1 span {
+  color: #efab82;
+  text-shadow: 3px 4px 0 #633626;
+}
+.is-mars .status-dot {
+  background: #efab82;
+  box-shadow: 0 0 10px #efab8240;
+}
+.is-mars .eyebrow,
+.is-mars .explore-note,
+.is-mars .biome-caption,
+.is-mars .orbit-cross {
+  color: #d5a38a;
+}
+.is-mars .intro-panel p,
+.is-mars .settings-group label,
+.is-mars .world-status strong {
+  color: #c0aba0;
+}
+.is-mars .world-coordinate,
+.is-mars .world-hint,
+.is-mars .orbit-caption,
+.is-mars .footer,
+.is-mars .world-status div > span,
+.is-mars .biome-caption > span {
+  color: #a18b7e;
+}
+.is-mars .intro-rule {
+  background: #78513d;
+}
+.is-mars .hotbar {
+  background: #130e0b;
+  border-color: #624431;
+  box-shadow: 0 4px 0 #090605;
+}
+.is-mars .biome-button {
+  background: linear-gradient(#34231b, #241913);
+}
+.is-mars .biome-button:hover {
+  background: #493023;
+  border-color: #c98c65;
+}
+.is-mars .biome-button.selected {
+  background: #523322;
+  border-color: #efab82;
+  box-shadow: inset 0 0 0 1px #efab8230;
+}
+.is-mars .biome-button > span:last-child,
+.is-mars .orbit-caption > span:nth-child(2) {
+  color: #dec3b2;
+}
+.is-mars .topbar .planet-picker {
+  background: #2b1d16;
+  border-color: #80583f;
+  color: #efab82;
+}
+.is-mars .topbar .planet-picker-label {
+  color: #c09c86;
+}
+.is-mars .topbar .planet-picker option {
+  background: #2b1d16;
+}
+.is-mars .time-list {
+  background: #211711e6 !important;
+}
+.is-mars .time-button[data-state='checked'] {
+  background: #513524 !important;
+  color: #f5d2ba !important;
+}
+.is-mars .world-tools {
+  background: #211711cc;
+}
+.is-mars .world-tools button {
+  color: #d9b6a0;
+}
+.is-mars .world-tools button:hover {
+  background: #efab8215;
+}
+.is-mars .settings-group [data-slot='switch'][data-state='checked'] {
+  background: #efab82;
+}
+.is-mars .settings-group [data-slot='switch-thumb'][data-state='checked'] {
+  background: #422617;
+}
+.is-mars :focus-visible {
+  outline-color: #efab82;
+}
+@media (max-width: 760px) {
+  .is-mars .earth-canvas {
+    left: 0;
+    right: 0;
+    top: 220px;
+    bottom: 45px;
+  }
+  .is-mars .intro-panel {
+    width: calc(100% - 48px);
+  }
+}
+
 svg {
   display: block;
   flex-shrink: 0;
