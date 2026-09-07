@@ -54,15 +54,15 @@ const open = ref(false);
           <div>
             <strong>Discover a block</strong>
             <p>
-              Click a block to highlight its biome below. Pick a biome to visit
-              a place.
+              Click a block to highlight its landscape below. Pick a destination
+              to visit a place.
             </p>
           </div>
         </div>
         <p class="help-note">
-          Continents follow Natural Earth coastlines. Biomes and terrain are
-          playful interpretations. An independent creation, inspired by
-          Minecraft.
+          Earth’s continents follow Natural Earth coastlines. Biomes and Mars
+          terrain are playful interpretations. An independent creation, inspired
+          by Minecraft.
         </p>
         <DialogClose class="help-close" aria-label="Close guide"
           ><X :size="18"
