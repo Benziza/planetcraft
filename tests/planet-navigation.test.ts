@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { flushPromises, mount, type VueWrapper } from '@vue/test-utils';
 import App from '../src/App.vue';
+import PlanetPicker from '../src/components/PlanetPicker.vue';
+import { planets } from '../src/data/planets';
 import type { EarthAPI } from '../src/lib/voxel-earth';
 
 const { createEarthMock } = vi.hoisted(() => ({ createEarthMock: vi.fn() }));
@@ -46,26 +48,21 @@ describe('planet navigation', () => {
     return wrapper;
   }
 
+  async function choose(view: VueWrapper, id: string) {
+    view.getComponent(PlanetPicker).vm.$emit('choose', id);
+    await flushPromises();
+  }
+
   it.each(['', '#/earth'])('opens Earth directly at %s', async (hash) => {
     const view = await start(hash);
     expect(view.find('.earth-canvas').exists()).toBe(true);
-    expect(view.get('select').element.value).toBe('earth');
+    expect(view.get('.planet-picker-value').text()).toBe('Earth');
     expect(createEarthMock).toHaveBeenCalledOnce();
   });
 
-  it('offers all eight planets and disposes Earth when Mars is selected', async () => {
+  it('disposes Earth when Mars is selected', async () => {
     const view = await start();
-    expect(view.findAll('option').map((option) => option.text())).toEqual([
-      'Mercury',
-      'Venus',
-      'Earth',
-      'Mars',
-      'Jupiter',
-      'Saturn',
-      'Uranus',
-      'Neptune',
-    ]);
-    await view.get('select').setValue('mars');
+    await choose(view, 'mars');
     await flushPromises();
     expect(window.location.hash).toBe('#/mars');
     expect(view.find('[aria-label="Interactive Mars explorer"]').exists()).toBe(
@@ -84,7 +81,9 @@ describe('planet navigation', () => {
       const view = await start(`#/${id}`);
       expect(view.get('h1').text()).toContain('404');
       expect(view.text()).toContain('NOT FOUND');
-      expect(view.get('select').element.value).toBe(id);
+      expect(view.get('.planet-picker-value').text()).toBe(
+        planets.find((planet) => planet.id === id)!.name,
+      );
       expect(view.find('.earth-canvas').exists()).toBe(false);
       expect(createEarthMock).not.toHaveBeenCalled();
     },
@@ -95,7 +94,7 @@ describe('planet navigation', () => {
     const selected = new Promise((resolve) =>
       window.addEventListener('hashchange', resolve, { once: true }),
     );
-    await view.get('select').setValue('mars');
+    await choose(view, 'mars');
     await selected;
     await flushPromises();
 
@@ -105,7 +104,7 @@ describe('planet navigation', () => {
     window.history.back();
     await back;
     await flushPromises();
-    expect(view.get('select').element.value).toBe('earth');
+    expect(view.get('.planet-picker-value').text()).toBe('Earth');
     expect(view.find('.earth-canvas').exists()).toBe(true);
 
     const forward = new Promise((resolve) =>
@@ -114,7 +113,7 @@ describe('planet navigation', () => {
     window.history.forward();
     await forward;
     await flushPromises();
-    expect(view.get('select').element.value).toBe('mars');
+    expect(view.get('.planet-picker-value').text()).toBe('Mars');
     expect(view.find('[aria-label="Interactive Mars explorer"]').exists()).toBe(
       true,
     );
@@ -128,7 +127,7 @@ describe('planet navigation', () => {
     expect(createEarthMock).toHaveBeenCalledOnce();
     expect(createEarthMock.mock.calls[0][3]).toBe('mars');
     expect(document.title).toBe('Mars — The Red Planet | Planetcraft');
-    await view.get('select').setValue('earth');
+    await choose(view, 'earth');
     await flushPromises();
     expect(api.dispose).toHaveBeenCalledOnce();
     expect(createEarthMock.mock.calls[1][3]).toBe('earth');
@@ -148,7 +147,7 @@ describe('planet navigation', () => {
     await flushPromises();
     expect(window.location.hash).toBe('#/earth');
     expect(view.find('.earth-canvas').exists()).toBe(true);
-    expect(view.get('select').element.value).toBe('earth');
+    expect(view.get('.planet-picker-value').text()).toBe('Earth');
     expect(document.title).toBe('Planetcraft — Worlds in blocks');
   });
 });

@@ -939,17 +939,6 @@ a {
 .is-mars .orbit-caption > span:nth-child(2) {
   color: #dec3b2;
 }
-.is-mars .topbar .planet-picker {
-  background: #2b1d16;
-  border-color: #80583f;
-  color: #efab82;
-}
-.is-mars .topbar .planet-picker-label {
-  color: #c09c86;
-}
-.is-mars .topbar .planet-picker option {
-  background: #2b1d16;
-}
 .is-mars .time-list {
   background: #211711e6 !important;
 }
