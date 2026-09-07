@@ -68,22 +68,17 @@ describe('planet navigation', () => {
     await view.get('select').setValue('mars');
     await flushPromises();
     expect(window.location.hash).toBe('#/mars');
-    expect(view.find('.earth-canvas').exists()).toBe(false);
+    expect(view.find('[aria-label="Interactive Mars explorer"]').exists()).toBe(
+      true,
+    );
     expect(api.dispose).toHaveBeenCalledOnce();
-    expect(view.get('h1').text()).toContain('404');
+    expect(view.get('h1').text()).toContain('NEW WORLD.');
+    expect(createEarthMock.mock.calls[1][3]).toBe('mars');
     expect(document.activeElement).toBe(view.get('h1').element);
     expect(document.title).toContain('Mars');
   });
 
-  it.each([
-    'mercury',
-    'venus',
-    'mars',
-    'jupiter',
-    'saturn',
-    'uranus',
-    'neptune',
-  ])(
+  it.each(['mercury', 'venus', 'jupiter', 'saturn', 'uranus', 'neptune'])(
     'opens a direct %s link as a missing world without creating a renderer',
     async (id) => {
       const view = await start(`#/${id}`);
@@ -120,7 +115,26 @@ describe('planet navigation', () => {
     await forward;
     await flushPromises();
     expect(view.get('select').element.value).toBe('mars');
-    expect(view.find('.earth-canvas').exists()).toBe(false);
+    expect(view.find('[aria-label="Interactive Mars explorer"]').exists()).toBe(
+      true,
+    );
+  });
+
+  it('opens Mars directly with a working scene and title', async () => {
+    const view = await start('#/mars');
+    expect(view.find('[aria-label="Interactive Mars explorer"]').exists()).toBe(
+      true,
+    );
+    expect(createEarthMock).toHaveBeenCalledOnce();
+    expect(createEarthMock.mock.calls[0][3]).toBe('mars');
+    expect(document.title).toBe('Mars — The Red Planet | Planetcraft');
+    await view.get('select').setValue('earth');
+    await flushPromises();
+    expect(api.dispose).toHaveBeenCalledOnce();
+    expect(createEarthMock.mock.calls[1][3]).toBe('earth');
+    expect(
+      view.find('[aria-label="Interactive Earth explorer"]').exists(),
+    ).toBe(true);
   });
 
   it('recovers from an unknown planet using Back to Earth', async () => {

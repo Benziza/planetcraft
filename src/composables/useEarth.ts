@@ -7,9 +7,14 @@ import {
   type Ref,
 } from 'vue';
 import { biomes } from '../data/biomes';
+import { marsBiomes } from '../data/mars-biomes';
 import type { BiomeId, EarthAPI } from '../lib/voxel-earth';
 
-export function useEarth(container: Ref<HTMLDivElement | null>) {
+export function useEarth(
+  container: Ref<HTMLDivElement | null>,
+  planetId: 'earth' | 'mars' = 'earth',
+) {
+  const destinations = planetId === 'mars' ? marsBiomes : biomes;
   const ready = ref(false);
   const error = ref(false);
   const lighting = ref('day');
@@ -37,16 +42,21 @@ export function useEarth(container: Ref<HTMLDivElement | null>) {
     try {
       const { createEarth } = await import('../lib/voxel-earth');
       if (disposed || !container.value) return;
-      const current = await createEarth(container.value, controller.signal, {
-        onSelect: (biome) => {
-          if (disposed) return;
-          active.value = biome;
-          rotating.value = false;
+      const current = await createEarth(
+        container.value,
+        controller.signal,
+        {
+          onSelect: (biome) => {
+            if (disposed) return;
+            active.value = biome;
+            rotating.value = false;
+          },
+          onInteract: () => {
+            if (!disposed) rotating.value = false;
+          },
         },
-        onInteract: () => {
-          if (!disposed) rotating.value = false;
-        },
-      });
+        planetId,
+      );
       if (disposed) {
         current.dispose();
         return;
@@ -71,7 +81,7 @@ export function useEarth(container: Ref<HTMLDivElement | null>) {
   });
 
   function focusBiome(index: number) {
-    const biome = biomes[index];
+    const biome = destinations[index];
     if (!ready.value || !biome) return;
     active.value = biome.id;
     rotating.value = false;

@@ -72,8 +72,11 @@ describe('Vue Earth explorer', () => {
     vi.unstubAllEnvs();
   });
 
-  async function start() {
-    wrapper = mount(EarthExplorer, { attachTo: document.body });
+  async function start(planetId: 'earth' | 'mars' = 'earth') {
+    wrapper = mount(EarthExplorer, {
+      attachTo: document.body,
+      props: { planetId },
+    });
     await flushPromises();
     return wrapper;
   }
@@ -83,6 +86,30 @@ describe('Vue Earth explorer', () => {
       typeof createEarth
     >[2];
   }
+
+  it('explores Mars terrain, dust, lighting, and picked blocks', async () => {
+    const view = await start('mars');
+    expect(view.get('main').classes()).toContain('is-mars');
+    expect(view.find('[aria-label="Show clouds"]').exists()).toBe(false);
+    await view.get('button[title="Explore Impact craters"]').trigger('click');
+    expect(api.focus).toHaveBeenLastCalledWith(-30, 28);
+    expect(api.setRotate).toHaveBeenLastCalledWith(false);
+    await view.get('button[aria-label="Show dust haze"]').trigger('click');
+    expect(api.setClouds).toHaveBeenLastCalledWith(false);
+    await view.get('[role="radio"][value="night"]').trigger('click');
+    expect(api.setNight).toHaveBeenLastCalledWith(true);
+    callbacks().onSelect('ice', 85, 0);
+    await nextTick();
+    expect(
+      view
+        .get('button[title="Explore Polar ice caps"]')
+        .attributes('aria-pressed'),
+    ).toBe('true');
+    await view.get('button[aria-label="Reset view"]').trigger('click');
+    expect(view.find('.biome-button[aria-pressed="true"]').exists()).toBe(
+      false,
+    );
+  });
 
   it.each(['/', '/planetcraft/'])(
     'keeps the home link inside the %s deployment',

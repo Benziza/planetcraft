@@ -12,13 +12,21 @@ import {
   Rotate3D,
   RotateCcw,
   Sun,
+  Wind,
 } from '@lucide/vue';
 import { RadioGroupItem, RadioGroupRoot } from 'reka-ui';
 import { useEarth } from '../composables/useEarth';
 import { biomes } from '../data/biomes';
+import { marsBiomes } from '../data/mars-biomes';
 import SiteHeader from './SiteHeader.vue';
 import WorldSwitch from './WorldSwitch.vue';
 
+const props = withDefaults(defineProps<{ planetId?: 'earth' | 'mars' }>(), {
+  planetId: 'earth',
+});
+const isMars = props.planetId === 'mars';
+const planetName = isMars ? 'Mars' : 'Earth';
+const destinations = isMars ? marsBiomes : biomes;
 const container = ref<HTMLDivElement | null>(null);
 const {
   ready,
@@ -34,24 +42,30 @@ const {
   zoom,
   onKeydown,
   reload,
-} = useEarth(container);
+} = useEarth(container, props.planetId);
 </script>
 
 <template>
-  <main class="earth-app" :class="{ 'is-night': night }">
+  <main class="earth-app" :class="{ 'is-night': night, 'is-mars': isMars }">
     <SiteHeader><slot name="planet-picker" /></SiteHeader>
 
-    <section class="explorer" aria-label="Interactive Earth explorer">
+    <section
+      class="explorer"
+      :aria-label="`Interactive ${planetName} explorer`"
+    >
       <div class="scene-backdrop" aria-hidden="true" />
       <div class="world-coordinate coord-top" aria-hidden="true">
-        <span>PLANET / 003</span><span>EST. 4.5 BILLION YEARS AGO</span>
+        <span>PLANET / {{ isMars ? '004' : '003' }}</span
+        ><span>{{
+          isMars ? 'A NEW WORLD TO WANDER' : 'EST. 4.5 BILLION YEARS AGO'
+        }}</span>
       </div>
       <div
         ref="container"
         class="earth-canvas"
         role="application"
         tabindex="0"
-        aria-label="3D voxel Earth. Drag or use arrow keys to rotate, scroll or use plus and minus to zoom. Click a block to discover its biome."
+        :aria-label="`3D voxel ${planetName}. Drag or use arrow keys to rotate, scroll or use plus and minus to zoom. Click a block to discover its ${isMars ? 'terrain' : 'biome'}.`"
         @keydown="onKeydown"
       />
 
@@ -71,10 +85,23 @@ const {
 
       <div class="intro-panel">
         <div class="eyebrow">
-          <span class="status-dot" /> THE WORLD, A LITTLE DIFFERENT
+          <span class="status-dot" />
+          {{
+            isMars
+              ? 'A LITTLE FURTHER FROM HOME'
+              : 'THE WORLD, A LITTLE DIFFERENT'
+          }}
         </div>
-        <h1 tabindex="-1">SMALL <br />BLOCKS.<br /><span>BIG WORLD.</span></h1>
-        <p>
+        <h1 tabindex="-1">
+          {{ isMars ? 'RED ' : 'SMALL ' }}<br />BLOCKS.<br /><span>{{
+            isMars ? 'NEW WORLD.' : 'BIG WORLD.'
+          }}</span>
+        </h1>
+        <p v-if="isMars">
+          A world of rust, rock, and possibility.<br class="desktop-break" />
+          Your next small adventure.
+        </p>
+        <p v-else>
           Our home planet. Reimagined, one<br class="desktop-break" />
           block at a time.
         </p>
@@ -129,8 +156,11 @@ const {
       </div>
 
       <div class="orbit-caption">
-        <span class="orbit-cross">+</span><span>EARTH</span
-        ><span class="orbit-line" /><span>THE OVERWORLD</span>
+        <span class="orbit-cross">+</span
+        ><span>{{ planetName.toUpperCase() }}</span
+        ><span class="orbit-line" /><span>{{
+          isMars ? 'THE RED PLANET' : 'THE OVERWORLD'
+        }}</span>
       </div>
       <div class="world-hint">
         <Move :size="14" /><span>Drag to rotate</span
@@ -140,7 +170,11 @@ const {
 
     <section
       class="control-deck"
-      aria-label="World settings and biome destinations"
+      :aria-label="
+        isMars
+          ? 'World settings and terrain destinations'
+          : 'World settings and biome destinations'
+      "
     >
       <div class="settings-group">
         <label for="auto-rotate"
@@ -148,17 +182,26 @@ const {
           ><WorldSwitch id="auto-rotate" v-model="rotating" label="Auto-rotate"
         /></label>
         <label for="show-clouds"
-          ><Cloud :size="17" /><span>Clouds</span
-          ><WorldSwitch id="show-clouds" v-model="clouds" label="Show clouds"
+          ><component :is="isMars ? Wind : Cloud" :size="17" /><span>{{
+            isMars ? 'Dust haze' : 'Clouds'
+          }}</span
+          ><WorldSwitch
+            id="show-clouds"
+            v-model="clouds"
+            :label="isMars ? 'Show dust haze' : 'Show clouds'"
         /></label>
       </div>
       <div class="biome-picker">
         <div class="biome-caption">
-          A LITTLE BIT OF EVERYTHING<span>JUMP TO A BIOME</span>
+          {{ isMars ? 'OFF THE BEATEN PLANET' : 'A LITTLE BIT OF EVERYTHING'
+          }}<span>{{ isMars ? 'JUMP TO A TERRAIN' : 'JUMP TO A BIOME' }}</span>
         </div>
-        <fieldset class="hotbar" aria-label="Jump to a biome">
+        <fieldset
+          class="hotbar"
+          :aria-label="isMars ? 'Jump to a terrain' : 'Jump to a biome'"
+        >
           <button
-            v-for="(biome, index) in biomes"
+            v-for="(biome, index) in destinations"
             :key="biome.id"
             :aria-pressed="active === biome.id"
             :disabled="!ready"
