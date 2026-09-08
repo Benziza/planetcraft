@@ -1,8 +1,11 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { marsPalette, sampleMars, type MarsBiomeId } from './mars-terrain';
+import { createSaturn } from './voxel-saturn';
+import type { SaturnBiomeId } from './saturn-terrain';
 
-export type BiomeId = 'forest' | 'desert' | 'ocean' | 'snow' | 'mountain' | MarsBiomeId;
+type SurfaceBiomeId = 'forest' | 'desert' | 'ocean' | 'snow' | 'mountain' | MarsBiomeId;
+export type BiomeId = SurfaceBiomeId | SaturnBiomeId;
 export type EarthAPI = {
   blockCount: number;
   setNight: (value: boolean) => void;
@@ -14,7 +17,7 @@ export type EarthAPI = {
   key: (key: string) => void;
   dispose: () => void;
 };
-type Cell = { x: number; y: number; z: number; biome: BiomeId; lat: number; lon: number };
+type Cell = { x: number; y: number; z: number; biome: SurfaceBiomeId; lat: number; lon: number };
 type Callbacks = { onSelect: (biome: BiomeId, lat: number, lon: number) => void; onInteract: () => void };
 type Land = { features: { geometry: { type: string; coordinates: number[][][] | number[][][][] } }[] };
 
@@ -22,9 +25,10 @@ const palette = { ocean: '#2675a6', forest: '#629441', desert: '#d3b879', snow: 
 const radians = Math.PI / 180;
 function noise(x: number, y: number, z: number) { const value = Math.sin(x * 127.1 + y * 311.7 + z * 74.7) * 43758.5453; return value - Math.floor(value); }
 
-export async function createEarth(container: HTMLElement, signal: AbortSignal, callbacks: Callbacks, planetId: 'earth' | 'mars' = 'earth'): Promise<EarthAPI> {
+export async function createEarth(container: HTMLElement, signal: AbortSignal, callbacks: Callbacks, planetId: 'earth' | 'mars' | 'saturn' = 'earth'): Promise<EarthAPI> {
+  if (planetId === 'saturn') return createSaturn(container, signal, callbacks);
   const isMars = planetId === 'mars';
-  let getBiome: (lat: number, lon: number) => BiomeId;
+  let getBiome: (lat: number, lon: number) => SurfaceBiomeId;
   if (isMars) {
     getBiome = (lat, lon) => sampleMars(lat, lon).biome;
   } else {
@@ -49,7 +53,7 @@ export async function createEarth(container: HTMLElement, signal: AbortSignal, c
   }
   const pixels = ctx.getImageData(0, 0, 1024, 512).data;
   const isLand = (lat: number, lon: number) => pixels[(Math.min(511, Math.max(0, Math.floor((90 - lat) / 180 * 512))) * 1024 + Math.min(1023, Math.max(0, Math.floor((lon + 180) / 360 * 1024)))) * 4 + 3] > 128;
-  getBiome = (lat: number, lon: number): BiomeId => {
+  getBiome = (lat: number, lon: number): SurfaceBiomeId => {
     if (!isLand(lat, lon)) return 'ocean';
     if (lat > 69 || lat < -62 || (lon > -65 && lon < -22 && lat > 59)) return 'snow';
     if ((lat > 15 && lat < 33 && lon > -18 && lon < 61) || (lat < -19 && lat > -32 && lon > 116 && lon < 142) || (lat < -16 && lat > -29 && lon > 12 && lon < 23)) return 'desert';

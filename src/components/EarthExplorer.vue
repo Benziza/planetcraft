@@ -8,6 +8,7 @@ import {
   Moon,
   MousePointer2,
   Move,
+  Orbit,
   Plus,
   Rotate3D,
   RotateCcw,
@@ -18,15 +19,22 @@ import { RadioGroupItem, RadioGroupRoot } from 'reka-ui';
 import { useEarth } from '../composables/useEarth';
 import { biomes } from '../data/biomes';
 import { marsBiomes } from '../data/mars-biomes';
+import { saturnBiomes } from '../data/saturn-biomes';
 import SiteHeader from './SiteHeader.vue';
 import WorldSwitch from './WorldSwitch.vue';
 
-const props = withDefaults(defineProps<{ planetId?: 'earth' | 'mars' }>(), {
-  planetId: 'earth',
-});
+const props = withDefaults(
+  defineProps<{ planetId?: 'earth' | 'mars' | 'saturn' }>(),
+  {
+    planetId: 'earth',
+  },
+);
 const isMars = props.planetId === 'mars';
-const planetName = isMars ? 'Mars' : 'Earth';
-const destinations = isMars ? marsBiomes : biomes;
+const isSaturn = props.planetId === 'saturn';
+const planetName = isSaturn ? 'Saturn' : isMars ? 'Mars' : 'Earth';
+const destinations = isSaturn ? saturnBiomes : isMars ? marsBiomes : biomes;
+const destinationKind = isSaturn ? 'feature' : isMars ? 'terrain' : 'biome';
+const overlayLabel = isSaturn ? 'Rings' : isMars ? 'Dust haze' : 'Clouds';
 const container = ref<HTMLDivElement | null>(null);
 const {
   ready,
@@ -46,7 +54,10 @@ const {
 </script>
 
 <template>
-  <main class="earth-app" :class="{ 'is-night': night, 'is-mars': isMars }">
+  <main
+    class="earth-app"
+    :class="{ 'is-night': night, 'is-mars': isMars, 'is-saturn': isSaturn }"
+  >
     <SiteHeader><slot name="planet-picker" /></SiteHeader>
 
     <section
@@ -55,9 +66,13 @@ const {
     >
       <div class="scene-backdrop" aria-hidden="true" />
       <div class="world-coordinate coord-top" aria-hidden="true">
-        <span>PLANET / {{ isMars ? '004' : '003' }}</span
+        <span>PLANET / {{ isSaturn ? '006' : isMars ? '004' : '003' }}</span
         ><span>{{
-          isMars ? 'A NEW WORLD TO WANDER' : 'EST. 4.5 BILLION YEARS AGO'
+          isSaturn
+            ? 'A WORLD WITH A LITTLE EXTRA'
+            : isMars
+              ? 'A NEW WORLD TO WANDER'
+              : 'EST. 4.5 BILLION YEARS AGO'
         }}</span>
       </div>
       <div
@@ -65,7 +80,7 @@ const {
         class="earth-canvas"
         role="application"
         tabindex="0"
-        :aria-label="`3D voxel ${planetName}. Drag or use arrow keys to rotate, scroll or use plus and minus to zoom. Click a block to discover its ${isMars ? 'terrain' : 'biome'}.`"
+        :aria-label="`3D voxel ${planetName}. Drag or use arrow keys to rotate, scroll or use plus and minus to zoom. Click a block to discover its ${destinationKind}.`"
         @keydown="onKeydown"
       />
 
@@ -87,17 +102,23 @@ const {
         <div class="eyebrow">
           <span class="status-dot" />
           {{
-            isMars
-              ? 'A LITTLE FURTHER FROM HOME'
-              : 'THE WORLD, A LITTLE DIFFERENT'
+            isSaturn
+              ? 'A LITTLE WONDER, A LOT OF RINGS'
+              : isMars
+                ? 'A LITTLE FURTHER FROM HOME'
+                : 'THE WORLD, A LITTLE DIFFERENT'
           }}
         </div>
         <h1 tabindex="-1">
           {{ isMars ? 'RED ' : 'SMALL ' }}<br />BLOCKS.<br /><span>{{
-            isMars ? 'NEW WORLD.' : 'BIG WORLD.'
+            isSaturn ? 'BIG RINGS.' : isMars ? 'NEW WORLD.' : 'BIG WORLD.'
           }}</span>
         </h1>
-        <p v-if="isMars">
+        <p v-if="isSaturn">
+          Golden clouds. A thousand icy rings.<br class="desktop-break" />
+          A gas giant with a softer side.
+        </p>
+        <p v-else-if="isMars">
           A world of rust, rock, and possibility.<br class="desktop-break" />
           Your next small adventure.
         </p>
@@ -159,7 +180,11 @@ const {
         <span class="orbit-cross">+</span
         ><span>{{ planetName.toUpperCase() }}</span
         ><span class="orbit-line" /><span>{{
-          isMars ? 'THE RED PLANET' : 'THE OVERWORLD'
+          isSaturn
+            ? 'THE RINGED PLANET'
+            : isMars
+              ? 'THE RED PLANET'
+              : 'THE OVERWORLD'
         }}</span>
       </div>
       <div class="world-hint">
@@ -170,11 +195,7 @@ const {
 
     <section
       class="control-deck"
-      :aria-label="
-        isMars
-          ? 'World settings and terrain destinations'
-          : 'World settings and biome destinations'
-      "
+      :aria-label="`World settings and ${destinationKind} destinations`"
     >
       <div class="settings-group">
         <label for="auto-rotate"
@@ -182,24 +203,26 @@ const {
           ><WorldSwitch id="auto-rotate" v-model="rotating" label="Auto-rotate"
         /></label>
         <label for="show-clouds"
-          ><component :is="isMars ? Wind : Cloud" :size="17" /><span>{{
-            isMars ? 'Dust haze' : 'Clouds'
-          }}</span
+          ><component
+            :is="isSaturn ? Orbit : isMars ? Wind : Cloud"
+            :size="17" /><span>{{ overlayLabel }}</span
           ><WorldSwitch
             id="show-clouds"
             v-model="clouds"
-            :label="isMars ? 'Show dust haze' : 'Show clouds'"
+            :label="`Show ${overlayLabel.toLowerCase()}`"
         /></label>
       </div>
       <div class="biome-picker">
         <div class="biome-caption">
-          {{ isMars ? 'OFF THE BEATEN PLANET' : 'A LITTLE BIT OF EVERYTHING'
-          }}<span>{{ isMars ? 'JUMP TO A TERRAIN' : 'JUMP TO A BIOME' }}</span>
+          {{
+            isSaturn
+              ? 'BEYOND THE CLOUDS'
+              : isMars
+                ? 'OFF THE BEATEN PLANET'
+                : 'A LITTLE BIT OF EVERYTHING'
+          }}<span>{{ `JUMP TO A ${destinationKind.toUpperCase()}` }}</span>
         </div>
-        <fieldset
-          class="hotbar"
-          :aria-label="isMars ? 'Jump to a terrain' : 'Jump to a biome'"
-        >
+        <fieldset class="hotbar" :aria-label="`Jump to a ${destinationKind}`">
           <button
             v-for="(biome, index) in destinations"
             :key="biome.id"
