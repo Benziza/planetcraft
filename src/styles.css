@@ -976,6 +976,113 @@ a {
   }
 }
 
+.is-saturn {
+  --primary: #e6cc91;
+  --ring: #e6cc91;
+  --border: #423b2c;
+  background: #12120f;
+}
+.is-saturn .topbar,
+.is-saturn .footer {
+  background: #171710;
+}
+.is-saturn .explorer {
+  background: radial-gradient(ellipse at 65% 48%, #4b3b2350, transparent 65%);
+}
+.is-saturn.is-night .explorer {
+  background: radial-gradient(ellipse at 65% 48%, #242b4255, transparent 65%);
+}
+.is-saturn .control-deck {
+  background: #1b1912;
+}
+.is-saturn .intro-panel h1 span {
+  color: #e6cc91;
+  text-shadow: 3px 4px 0 #574526;
+}
+.is-saturn .status-dot {
+  background: #e6cc91;
+  box-shadow: 0 0 10px #e6cc9140;
+}
+.is-saturn .eyebrow,
+.is-saturn .explore-note,
+.is-saturn .biome-caption,
+.is-saturn .orbit-cross {
+  color: #d0bc91;
+}
+.is-saturn .intro-panel p,
+.is-saturn .settings-group label,
+.is-saturn .world-status strong {
+  color: #bfb5a0;
+}
+.is-saturn .world-coordinate,
+.is-saturn .world-hint,
+.is-saturn .orbit-caption,
+.is-saturn .footer,
+.is-saturn .world-status div > span,
+.is-saturn .biome-caption > span {
+  color: #a69c87;
+}
+.is-saturn .intro-rule {
+  background: #786644;
+}
+.is-saturn .hotbar {
+  background: #12100c;
+  border-color: #625438;
+  box-shadow: 0 4px 0 #090805;
+}
+.is-saturn .biome-button {
+  background: linear-gradient(#302b1e, #242016);
+}
+.is-saturn .biome-button:hover {
+  background: #443c28;
+  border-color: #bda46c;
+}
+.is-saturn .biome-button.selected {
+  background: #4c4026;
+  border-color: #e6cc91;
+  box-shadow: inset 0 0 0 1px #e6cc9130;
+}
+.is-saturn .biome-button > span:last-child,
+.is-saturn .orbit-caption > span:nth-child(2) {
+  color: #e2d4b7;
+}
+.is-saturn .time-list {
+  background: #232017e6 !important;
+}
+.is-saturn .time-button[data-state='checked'] {
+  background: #4b4029 !important;
+  color: #f5e4bd !important;
+}
+.is-saturn .world-tools {
+  background: #232017cc;
+}
+.is-saturn .world-tools button {
+  color: #d7c6a2;
+}
+.is-saturn .world-tools button:hover {
+  background: #e6cc9115;
+}
+.is-saturn .settings-group [data-slot='switch'][data-state='checked'] {
+  background: #e6cc91;
+}
+.is-saturn .settings-group [data-slot='switch-thumb'][data-state='checked'] {
+  background: #3d3017;
+}
+.is-saturn :focus-visible {
+  outline-color: #e6cc91;
+}
+@media (max-width: 760px) {
+  .is-saturn .earth-canvas {
+    left: 0;
+    right: 0;
+    top: 230px;
+    bottom: 45px;
+  }
+  .is-saturn .intro-panel {
+    width: calc(100% - 48px);
+  }
+}
+
 svg {
   display: block;
   flex-shrink: 0;

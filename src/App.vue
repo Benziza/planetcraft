@@ -18,7 +18,9 @@ watch(planetId, async () => {
 <template>
   <div ref="page">
     <EarthExplorer
-      v-if="planetId === 'earth' || planetId === 'mars'"
+      v-if="
+        planetId === 'earth' || planetId === 'mars' || planetId === 'saturn'
+      "
       :key="planetId"
       :planet-id="planetId"
     >

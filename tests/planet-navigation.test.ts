@@ -75,7 +75,7 @@ describe('planet navigation', () => {
     expect(document.title).toContain('Mars');
   });
 
-  it.each(['mercury', 'venus', 'jupiter', 'saturn', 'uranus', 'neptune'])(
+  it.each(['mercury', 'venus', 'jupiter', 'uranus', 'neptune'])(
     'opens a direct %s link as a missing world without creating a renderer',
     async (id) => {
       const view = await start(`#/${id}`);
@@ -135,6 +135,42 @@ describe('planet navigation', () => {
       view.find('[aria-label="Interactive Earth explorer"]').exists(),
     ).toBe(true);
   });
+
+  it('opens Saturn directly with a working scene and title', async () => {
+    const view = await start('#/saturn');
+    expect(
+      view.find('[aria-label="Interactive Saturn explorer"]').exists(),
+    ).toBe(true);
+    expect(view.get('.planet-picker-value').text()).toBe('Saturn');
+    expect(view.get('main').classes()).toContain('is-saturn');
+    expect(createEarthMock).toHaveBeenCalledOnce();
+    expect(createEarthMock.mock.calls[0][3]).toBe('saturn');
+    expect(document.title).toBe('Saturn — The Ringed Planet | Planetcraft');
+  });
+
+  it.each(['earth', 'mars'])(
+    'disposes scenes when switching from %s to Saturn and back',
+    async (id) => {
+      const view = await start(`#/${id}`);
+      const saturnApi = { ...api, dispose: vi.fn() };
+      createEarthMock.mockResolvedValueOnce(saturnApi);
+      await choose(view, 'saturn');
+      expect(window.location.hash).toBe('#/saturn');
+      expect(api.dispose).toHaveBeenCalledOnce();
+      expect(saturnApi.dispose).not.toHaveBeenCalled();
+      expect(createEarthMock.mock.calls[1][3]).toBe('saturn');
+      expect(document.activeElement).toBe(view.get('h1').element);
+
+      await choose(view, id);
+      expect(window.location.hash).toBe(`#/${id}`);
+      expect(saturnApi.dispose).toHaveBeenCalledOnce();
+      expect(api.dispose).toHaveBeenCalledOnce();
+      expect(createEarthMock.mock.calls[2][3]).toBe(id);
+      expect(view.get('.planet-picker-value').text()).toBe(
+        id === 'earth' ? 'Earth' : 'Mars',
+      );
+    },
+  );
 
   it('recovers from an unknown planet using Back to Earth', async () => {
     const view = await start('#/pluto');

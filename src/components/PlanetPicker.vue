@@ -108,6 +108,14 @@ function restoreFocus(event: Event) {
   --picker-muted: #c09c86;
   --picker-hover: #493023;
 }
+.planet-picker[data-planet='saturn'],
+:global(.planet-menu[data-planet='saturn']) {
+  --picker-background: #262219;
+  --picker-border: #756544;
+  --picker-accent: #e6cc91;
+  --picker-muted: #b9aa8b;
+  --picker-hover: #403726;
+}
 .planet-picker {
   position: absolute;
   left: 50%;

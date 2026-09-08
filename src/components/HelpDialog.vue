@@ -54,15 +54,16 @@ const open = ref(false);
           <div>
             <strong>Discover a block</strong>
             <p>
-              Click a block to highlight its landscape below. Pick a destination
+              Click a block to highlight its feature below. Pick a destination
               to visit a place.
             </p>
           </div>
         </div>
         <p class="help-note">
-          Earth’s continents follow Natural Earth coastlines. Biomes and Mars
-          terrain are playful interpretations. An independent creation, inspired
-          by Minecraft.
+          Earth’s continents follow Natural Earth coastlines. Biomes, Mars
+          terrain, and Saturn’s clouds and icy rings are playful
+          interpretations. Saturn is a gas giant, with no solid surface to land
+          on. An independent creation, inspired by Minecraft.
         </p>
         <DialogClose class="help-close" aria-label="Close guide"
           ><X :size="18"

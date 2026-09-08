@@ -72,7 +72,7 @@ describe('Vue Earth explorer', () => {
     vi.unstubAllEnvs();
   });
 
-  async function start(planetId: 'earth' | 'mars' = 'earth') {
+  async function start(planetId: 'earth' | 'mars' | 'saturn' = 'earth') {
     wrapper = mount(EarthExplorer, {
       attachTo: document.body,
       props: { planetId },
@@ -106,6 +106,56 @@ describe('Vue Earth explorer', () => {
         .attributes('aria-pressed'),
     ).toBe('true');
     await view.get('button[aria-label="Reset view"]').trigger('click');
+    expect(view.find('.biome-button[aria-pressed="true"]').exists()).toBe(
+      false,
+    );
+  });
+
+  it('explores Saturn destinations, rings, lighting, and picked blocks', async () => {
+    const view = await start('saturn');
+    expect(view.get('main').classes()).toContain('is-saturn');
+    expect(view.find('[aria-label="Show clouds"]').exists()).toBe(false);
+    expect(view.find('[aria-label="Show dust haze"]').exists()).toBe(false);
+    expect(
+      view.findAll('.biome-button').map((button) => button.attributes('title')),
+    ).toEqual([
+      'Explore Cloud bands',
+      'Explore Storm lanes',
+      'Explore Polar haze',
+      'Explore North hexagon',
+      'Explore Icy rings',
+    ]);
+
+    await view.get('button[title="Explore North hexagon"]').trigger('click');
+    expect(api.focus).toHaveBeenLastCalledWith(82, 0);
+    expect(api.setRotate).toHaveBeenLastCalledWith(false);
+    expect(
+      view
+        .get('button[title="Explore North hexagon"]')
+        .attributes('aria-pressed'),
+    ).toBe('true');
+
+    await view.get('button[aria-label="Show rings"]').trigger('click');
+    expect(api.setClouds).toHaveBeenLastCalledWith(false);
+    await view.get('button[title="Explore Icy rings"]').trigger('click');
+    expect(api.focus).toHaveBeenLastCalledWith(22, 0);
+    expect(api.setClouds).toHaveBeenLastCalledWith(true);
+    expect(
+      view.get('button[aria-label="Show rings"]').attributes('aria-checked'),
+    ).toBe('true');
+    await view.get('[role="radio"][value="night"]').trigger('click');
+    expect(api.setNight).toHaveBeenLastCalledWith(true);
+    expect(view.get('main').classes()).toContain('is-night');
+
+    callbacks().onSelect('saturn-storms', 35, -32);
+    await nextTick();
+    expect(
+      view
+        .get('button[title="Explore Storm lanes"]')
+        .attributes('aria-pressed'),
+    ).toBe('true');
+    await view.get('button[aria-label="Reset view"]').trigger('click');
+    expect(api.reset).toHaveBeenCalledOnce();
     expect(view.find('.biome-button[aria-pressed="true"]').exists()).toBe(
       false,
     );
@@ -223,15 +273,18 @@ describe('Vue Earth explorer', () => {
     expect(api.setRotate).toHaveBeenLastCalledWith(true);
   });
 
-  it('respects reduced motion on initialization and reset', async () => {
-    reducedMotion = true;
-    const view = await start();
-    expect(api.setRotate).toHaveBeenLastCalledWith(false);
-    await view.get('button[aria-label="Auto-rotate"]').trigger('click');
-    expect(api.setRotate).toHaveBeenLastCalledWith(true);
-    await view.get('button[aria-label="Reset view"]').trigger('click');
-    expect(api.setRotate).toHaveBeenLastCalledWith(false);
-  });
+  it.each(['earth', 'saturn'] as const)(
+    'respects reduced motion on %s initialization and reset',
+    async (planetId) => {
+      reducedMotion = true;
+      const view = await start(planetId);
+      expect(api.setRotate).toHaveBeenLastCalledWith(false);
+      await view.get('button[aria-label="Auto-rotate"]').trigger('click');
+      expect(api.setRotate).toHaveBeenLastCalledWith(true);
+      await view.get('button[aria-label="Reset view"]').trigger('click');
+      expect(api.setRotate).toHaveBeenLastCalledWith(false);
+    },
+  );
 
   it('shows retry feedback and keeps camera and biome controls disabled after failure', async () => {
     createEarthMock.mockRejectedValue(new Error('Land data unavailable'));
@@ -246,19 +299,22 @@ describe('Vue Earth explorer', () => {
     expect(view.get('.biome-button').attributes('disabled')).toBeDefined();
   });
 
-  it('aborts initialization and disposes a late scene after unmount', async () => {
-    const pending = deferred<EarthAPI>();
-    createEarthMock.mockReturnValue(pending.promise);
-    const view = await start();
-    const signal = createEarthMock.mock.calls[0][1] as AbortSignal;
-    view.unmount();
-    wrapper = undefined;
-    expect(signal.aborted).toBe(true);
-    pending.resolve(api);
-    await flushPromises();
-    expect(api.dispose).toHaveBeenCalledOnce();
-    expect(api.setNight).not.toHaveBeenCalled();
-  });
+  it.each(['earth', 'saturn'] as const)(
+    'aborts %s initialization and disposes a late scene after unmount',
+    async (planetId) => {
+      const pending = deferred<EarthAPI>();
+      createEarthMock.mockReturnValue(pending.promise);
+      const view = await start(planetId);
+      const signal = createEarthMock.mock.calls[0][1] as AbortSignal;
+      view.unmount();
+      wrapper = undefined;
+      expect(signal.aborted).toBe(true);
+      pending.resolve(api);
+      await flushPromises();
+      expect(api.dispose).toHaveBeenCalledOnce();
+      expect(api.setNight).not.toHaveBeenCalled();
+    },
+  );
 
   it('disposes an initialized scene once on unmount', async () => {
     const view = await start();
