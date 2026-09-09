@@ -1083,6 +1083,113 @@ a {
   }
 }
 
+.is-venus {
+  --primary: #e8bd70;
+  --ring: #e8bd70;
+  --border: #423b2c;
+  background: #12120f;
+}
+.is-venus .topbar,
+.is-venus .footer {
+  background: #171710;
+}
+.is-venus .explorer {
+  background: radial-gradient(ellipse at 65% 48%, #75502450, transparent 65%);
+}
+.is-venus.is-night .explorer {
+  background: radial-gradient(ellipse at 65% 48%, #242b4255, transparent 65%);
+}
+.is-venus .control-deck {
+  background: #1b1912;
+}
+.is-venus .intro-panel h1 span {
+  color: #e8bd70;
+  text-shadow: 3px 4px 0 #574526;
+}
+.is-venus .status-dot {
+  background: #e8bd70;
+  box-shadow: 0 0 10px #e8bd7040;
+}
+.is-venus .eyebrow,
+.is-venus .explore-note,
+.is-venus .biome-caption,
+.is-venus .orbit-cross {
+  color: #d0bc91;
+}
+.is-venus .intro-panel p,
+.is-venus .settings-group label,
+.is-venus .world-status strong {
+  color: #bfb5a0;
+}
+.is-venus .world-coordinate,
+.is-venus .world-hint,
+.is-venus .orbit-caption,
+.is-venus .footer,
+.is-venus .world-status div > span,
+.is-venus .biome-caption > span {
+  color: #a69c87;
+}
+.is-venus .intro-rule {
+  background: #786644;
+}
+.is-venus .hotbar {
+  background: #12100c;
+  border-color: #625438;
+  box-shadow: 0 4px 0 #090805;
+}
+.is-venus .biome-button {
+  background: linear-gradient(#302b1e, #242016);
+}
+.is-venus .biome-button:hover {
+  background: #443c28;
+  border-color: #bda46c;
+}
+.is-venus .biome-button.selected {
+  background: #4c4026;
+  border-color: #e8bd70;
+  box-shadow: inset 0 0 0 1px #e8bd7030;
+}
+.is-venus .biome-button > span:last-child,
+.is-venus .orbit-caption > span:nth-child(2) {
+  color: #e2d4b7;
+}
+.is-venus .time-list {
+  background: #232017e6 !important;
+}
+.is-venus .time-button[data-state='checked'] {
+  background: #4b4029 !important;
+  color: #f5e4bd !important;
+}
+.is-venus .world-tools {
+  background: #232017cc;
+}
+.is-venus .world-tools button {
+  color: #d7c6a2;
+}
+.is-venus .world-tools button:hover {
+  background: #e8bd7015;
+}
+.is-venus .settings-group [data-slot='switch'][data-state='checked'] {
+  background: #e8bd70;
+}
+.is-venus .settings-group [data-slot='switch-thumb'][data-state='checked'] {
+  background: #3d3017;
+}
+.is-venus :focus-visible {
+  outline-color: #e8bd70;
+}
+@media (max-width: 760px) {
+  .is-venus .earth-canvas {
+    left: 0;
+    right: 0;
+    top: 230px;
+    bottom: 45px;
+  }
+  .is-venus .intro-panel {
+    width: calc(100% - 48px);
+  }
+}
+
 svg {
   display: block;
   flex-shrink: 0;
