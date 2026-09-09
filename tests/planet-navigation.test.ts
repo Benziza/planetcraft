@@ -75,7 +75,7 @@ describe('planet navigation', () => {
     expect(document.title).toContain('Mars');
   });
 
-  it.each(['mercury', 'venus', 'jupiter', 'uranus', 'neptune'])(
+  it.each(['mercury', 'jupiter', 'uranus', 'neptune'])(
     'opens a direct %s link as a missing world without creating a renderer',
     async (id) => {
       const view = await start(`#/${id}`);
@@ -171,6 +171,31 @@ describe('planet navigation', () => {
       );
     },
   );
+
+  it('opens Venus directly and supports terrain, clouds, and navigation cleanup', async () => {
+    const view = await start('#/venus');
+    expect(
+      view.find('[aria-label="Interactive Venus explorer"]').exists(),
+    ).toBe(true);
+    expect(view.get('.planet-picker-value').text()).toBe('Venus');
+    expect(view.get('main').classes()).toContain('is-venus');
+    expect(document.title).toBe('Venus — The Veiled Planet | Planetcraft');
+    expect(createEarthMock.mock.calls[0][3]).toBe('venus');
+    await view.get('button[title="Explore Rocky highlands"]').trigger('click');
+    expect(api.focus).toHaveBeenCalledWith(55, 100);
+    await view.get('[aria-label="Show cloud veil"]').trigger('click');
+    expect(api.setClouds).toHaveBeenLastCalledWith(false);
+    await choose(view, 'earth');
+    expect(api.dispose).toHaveBeenCalledOnce();
+    const venusApi = { ...api, dispose: vi.fn() };
+    createEarthMock.mockResolvedValueOnce(venusApi);
+    await choose(view, 'venus');
+    expect(createEarthMock.mock.calls[2][3]).toBe('venus');
+    expect(document.activeElement).toBe(view.get('h1').element);
+    view.unmount();
+    wrapper = undefined;
+    expect(venusApi.dispose).toHaveBeenCalledOnce();
+  });
 
   it('recovers from an unknown planet using Back to Earth', async () => {
     const view = await start('#/pluto');

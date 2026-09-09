@@ -30,11 +30,13 @@ export function usePlanetRoute() {
       document.title =
         planetId.value === 'earth'
           ? 'Planetcraft — Worlds in blocks'
-          : planetId.value === 'mars'
-            ? 'Mars — The Red Planet | Planetcraft'
-            : planetId.value === 'saturn'
-              ? 'Saturn — The Ringed Planet | Planetcraft'
-              : `${planetName.value} — 404 Not Found | Planetcraft`;
+          : planetId.value === 'venus'
+            ? 'Venus — The Veiled Planet | Planetcraft'
+            : planetId.value === 'mars'
+              ? 'Mars — The Red Planet | Planetcraft'
+              : planetId.value === 'saturn'
+                ? 'Saturn — The Ringed Planet | Planetcraft'
+                : `${planetName.value} — 404 Not Found | Planetcraft`;
     },
     { immediate: true },
   );
