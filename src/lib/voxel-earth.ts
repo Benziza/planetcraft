@@ -1,10 +1,11 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { venusPalette, sampleVenus, type VenusBiomeId } from './venus-terrain';
 import { marsPalette, sampleMars, type MarsBiomeId } from './mars-terrain';
 import { createSaturn } from './voxel-saturn';
 import type { SaturnBiomeId } from './saturn-terrain';
 
-type SurfaceBiomeId = 'forest' | 'desert' | 'ocean' | 'snow' | 'mountain' | MarsBiomeId;
+type SurfaceBiomeId = 'forest' | 'desert' | 'ocean' | 'snow' | 'mountain' | MarsBiomeId | VenusBiomeId;
 export type BiomeId = SurfaceBiomeId | SaturnBiomeId;
 export type EarthAPI = {
   blockCount: number;
@@ -21,16 +22,19 @@ type Cell = { x: number; y: number; z: number; biome: SurfaceBiomeId; lat: numbe
 type Callbacks = { onSelect: (biome: BiomeId, lat: number, lon: number) => void; onInteract: () => void };
 type Land = { features: { geometry: { type: string; coordinates: number[][][] | number[][][][] } }[] };
 
-const palette = { ocean: '#2675a6', forest: '#629441', desert: '#d3b879', snow: '#d7e6e5', mountain: '#8f9181', ...marsPalette };
+const palette = { ocean: '#2675a6', forest: '#629441', desert: '#d3b879', snow: '#d7e6e5', mountain: '#8f9181', ...marsPalette, ...venusPalette };
 const radians = Math.PI / 180;
 function noise(x: number, y: number, z: number) { const value = Math.sin(x * 127.1 + y * 311.7 + z * 74.7) * 43758.5453; return value - Math.floor(value); }
 
-export async function createEarth(container: HTMLElement, signal: AbortSignal, callbacks: Callbacks, planetId: 'earth' | 'mars' | 'saturn' = 'earth'): Promise<EarthAPI> {
+export async function createEarth(container: HTMLElement, signal: AbortSignal, callbacks: Callbacks, planetId: 'earth' | 'mars' | 'saturn' | 'venus' = 'earth'): Promise<EarthAPI> {
   if (planetId === 'saturn') return createSaturn(container, signal, callbacks);
   const isMars = planetId === 'mars';
+  const isVenus = planetId === 'venus';
+  const isRocky = isMars || isVenus;
+  const sampleTerrain = isVenus ? sampleVenus : sampleMars;
   let getBiome: (lat: number, lon: number) => SurfaceBiomeId;
-  if (isMars) {
-    getBiome = (lat, lon) => sampleMars(lat, lon).biome;
+  if (isRocky) {
+    getBiome = (lat, lon) => sampleTerrain(lat, lon).biome;
   } else {
   const response = await fetch(`${import.meta.env.BASE_URL}land.geojson`, { signal });
   if (!response.ok) throw new Error('Land data unavailable');
@@ -84,11 +88,11 @@ export async function createEarth(container: HTMLElement, signal: AbortSignal, c
 
   const planet = new THREE.Group();
   scene.add(planet);
-  const fill = new THREE.HemisphereLight(isMars ? '#ffe0c4' : '#c8e5ff', isMars ? '#351b18' : '#132b36', 2.35);
+  const fill = new THREE.HemisphereLight(isVenus ? '#ffebbf' : isMars ? '#ffe0c4' : '#c8e5ff', isVenus ? '#352719' : isMars ? '#351b18' : '#132b36', 2.35);
   scene.add(fill);
   const sun = new THREE.DirectionalLight('#fff3d3', 3.7);
   sun.position.set(-5, 7, 6); scene.add(sun);
-  const rim = new THREE.DirectionalLight(isMars ? '#e89972' : '#74bafa', 2.0);
+  const rim = new THREE.DirectionalLight(isVenus ? '#e8c576' : isMars ? '#e89972' : '#74bafa', 2.0);
   rim.position.set(4, 0, -5); scene.add(rim);
 
   const textureCanvas = document.createElement('canvas');
@@ -103,16 +107,16 @@ export async function createEarth(container: HTMLElement, signal: AbortSignal, c
   texture.colorSpace = THREE.SRGBColorSpace;
   const geometry = new THREE.BoxGeometry(1, 1, 1);
   const material = new THREE.MeshStandardMaterial({ map: texture, roughness: 1, metalness: 0 });
-  const radius = 25, size = 0.119, bound = radius + (isMars ? 4 : 3), width = bound * 2 + 1;
+  const radius = 25, size = 0.119, bound = radius + (isRocky ? 4 : 3), width = bound * 2 + 1;
   const filled = new Uint8Array(width ** 3);
   const address = (x: number, y: number, z: number) => (x + bound) * width * width + (y + bound) * width + z + bound;
   for (let x = -bound + 1; x < bound; x++) for (let y = -bound + 1; y < bound; y++) for (let z = -bound + 1; z < bound; z++) {
     const d = Math.hypot(x, y, z);
-    if (d < radius - (isMars ? 2 : 1)) { filled[address(x, y, z)] = 1; continue; }
-    if (d > radius + (isMars ? 2.8 : 1.6)) continue;
+    if (d < radius - (isRocky ? 2 : 1)) { filled[address(x, y, z)] = 1; continue; }
+    if (d > radius + (isRocky ? 2.8 : 1.6)) continue;
     const lat = Math.asin(y / d) / radians, lon = Math.atan2(x, z) / radians;
     const biome = getBiome(lat, lon);
-    const elevation = isMars ? sampleMars(lat, lon).elevation : biome === 'ocean' ? 0 : biome === 'mountain' ? 1.1 + noise(x, y, z) * 0.4 : 0.6;
+    const elevation = isRocky ? sampleTerrain(lat, lon).elevation : biome === 'ocean' ? 0 : biome === 'mountain' ? 1.1 + noise(x, y, z) * 0.4 : 0.6;
     if (d <= radius + elevation) filled[address(x, y, z)] = 1;
   }
   const cells: Cell[] = [];
@@ -151,6 +155,11 @@ export async function createEarth(container: HTMLElement, signal: AbortSignal, c
 
   const cloudBlocks: Block[] = [];
   const cloudCenters = [[44, -30], [-14, -8], [18, 75], [-35, 60], [53, 111], [6, -94], [-30, -123], [61, -110], [-4, 138], [26, -174], [-48, 160], [8, 31]];
+  if (isVenus) {
+    cloudCenters.length = 0;
+    for (let lat = -70; lat <= 70; lat += 20)
+      for (let lon = -180; lon < 180; lon += 25) cloudCenters.push([lat, lon + 8 * Math.sin(lat * radians)]);
+  }
   for (const [lat, lon] of cloudCenters) {
     const normal = new THREE.Vector3(Math.cos(lat * radians) * Math.sin(lon * radians), Math.sin(lat * radians), Math.cos(lat * radians) * Math.cos(lon * radians));
     const tangent = new THREE.Vector3().crossVectors(normal, new THREE.Vector3(0, 1, 0)).normalize();
@@ -162,7 +171,7 @@ export async function createEarth(container: HTMLElement, signal: AbortSignal, c
       cloudBlocks.push({ position: p, scale: new THREE.Vector3(.24, .14, .22), color: '#f3f4e9' });
     }
   }
-  const cloudMaterial = new THREE.MeshStandardMaterial({ roughness: 1, color: isMars ? '#cc9873' : '#edf4ef', transparent: isMars, opacity: isMars ? 0.22 : 1, depthWrite: !isMars });
+  const cloudMaterial = new THREE.MeshStandardMaterial({ roughness: 1, color: isVenus ? '#edcf86' : isMars ? '#cc9873' : '#edf4ef', transparent: isRocky, opacity: isVenus ? 0.55 : isMars ? 0.22 : 1, depthWrite: !isRocky });
   const clouds = new THREE.InstancedMesh(geometry, cloudMaterial, cloudBlocks.length);
   cloudBlocks.forEach((block, i) => { dummy.position.copy(block.position); dummy.scale.copy(block.scale); dummy.updateMatrix(); clouds.setMatrixAt(i, dummy.matrix); });
   clouds.instanceMatrix.needsUpdate = true; clouds.computeBoundingSphere(); planet.add(clouds);
@@ -177,7 +186,7 @@ export async function createEarth(container: HTMLElement, signal: AbortSignal, c
   scene.add(new THREE.Points(starGeometry, starMaterial));
 
   const orbitGeometry = new THREE.BufferGeometry().setFromPoints(Array.from({ length: 161 }, (_, i) => { const a = i / 160 * Math.PI * 2; return new THREE.Vector3(Math.cos(a) * 4.15, 0, Math.sin(a) * 4.15); }));
-  const orbitMaterial = new THREE.LineDashedMaterial({ color: isMars ? '#99705b' : '#55756e', transparent: true, opacity: .24, dashSize: .07, gapSize: .08 });
+  const orbitMaterial = new THREE.LineDashedMaterial({ color: isVenus ? '#b19a60' : isMars ? '#99705b' : '#55756e', transparent: true, opacity: .24, dashSize: .07, gapSize: .08 });
   const orbit = new THREE.Line(orbitGeometry, orbitMaterial); orbit.computeLineDistances(); orbit.rotation.z = -.19; scene.add(orbit);
 
   let targetPosition: THREE.Vector3 | null = null;
