@@ -9,21 +9,24 @@ import {
 import { biomes } from '../data/biomes';
 import { venusBiomes } from '../data/venus-biomes';
 import { marsBiomes } from '../data/mars-biomes';
+import { jupiterBiomes } from '../data/jupiter-biomes';
 import { saturnBiomes } from '../data/saturn-biomes';
 import type { BiomeId, EarthAPI } from '../lib/voxel-earth';
 
 export function useEarth(
   container: Ref<HTMLDivElement | null>,
-  planetId: 'earth' | 'mars' | 'saturn' | 'venus' = 'earth',
+  planetId: 'earth' | 'mars' | 'saturn' | 'venus' | 'jupiter' = 'earth',
 ) {
   const destinations =
-    planetId === 'venus'
-      ? venusBiomes
-      : planetId === 'saturn'
-        ? saturnBiomes
-        : planetId === 'mars'
-          ? marsBiomes
-          : biomes;
+    planetId === 'jupiter'
+      ? jupiterBiomes
+      : planetId === 'venus'
+        ? venusBiomes
+        : planetId === 'saturn'
+          ? saturnBiomes
+          : planetId === 'mars'
+            ? marsBiomes
+            : biomes;
   const ready = ref(false);
   const error = ref(false);
   const lighting = ref('day');

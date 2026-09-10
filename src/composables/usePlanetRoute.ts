@@ -34,9 +34,11 @@ export function usePlanetRoute() {
             ? 'Venus — The Veiled Planet | Planetcraft'
             : planetId.value === 'mars'
               ? 'Mars — The Red Planet | Planetcraft'
-              : planetId.value === 'saturn'
-                ? 'Saturn — The Ringed Planet | Planetcraft'
-                : `${planetName.value} — 404 Not Found | Planetcraft`;
+              : planetId.value === 'jupiter'
+                ? 'Jupiter — The Gas Giant | Planetcraft'
+                : planetId.value === 'saturn'
+                  ? 'Saturn — The Ringed Planet | Planetcraft'
+                  : `${planetName.value} — 404 Not Found | Planetcraft`;
     },
     { immediate: true },
   );

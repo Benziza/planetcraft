@@ -20,45 +20,52 @@ import { useEarth } from '../composables/useEarth';
 import { biomes } from '../data/biomes';
 import { venusBiomes } from '../data/venus-biomes';
 import { marsBiomes } from '../data/mars-biomes';
+import { jupiterBiomes } from '../data/jupiter-biomes';
 import { saturnBiomes } from '../data/saturn-biomes';
 import SiteHeader from './SiteHeader.vue';
 import WorldSwitch from './WorldSwitch.vue';
 
 const props = withDefaults(
-  defineProps<{ planetId?: 'earth' | 'mars' | 'saturn' | 'venus' }>(),
+  defineProps<{
+    planetId?: 'earth' | 'mars' | 'saturn' | 'venus' | 'jupiter';
+  }>(),
   {
     planetId: 'earth',
   },
 );
+const isJupiter = props.planetId === 'jupiter';
 const isVenus = props.planetId === 'venus';
 const isMars = props.planetId === 'mars';
 const isSaturn = props.planetId === 'saturn';
-const planetName = isVenus
-  ? 'Venus'
-  : isSaturn
-    ? 'Saturn'
-    : isMars
-      ? 'Mars'
-      : 'Earth';
-const destinations = isVenus
-  ? venusBiomes
-  : isSaturn
-    ? saturnBiomes
-    : isMars
-      ? marsBiomes
-      : biomes;
-const destinationKind = isSaturn
-  ? 'feature'
-  : isMars || isVenus
-    ? 'terrain'
-    : 'biome';
-const overlayLabel = isVenus
-  ? 'Cloud veil'
-  : isSaturn
-    ? 'Rings'
-    : isMars
-      ? 'Dust haze'
-      : 'Clouds';
+const planetName = isJupiter
+  ? 'Jupiter'
+  : isVenus
+    ? 'Venus'
+    : isSaturn
+      ? 'Saturn'
+      : isMars
+        ? 'Mars'
+        : 'Earth';
+const destinations = isJupiter
+  ? jupiterBiomes
+  : isVenus
+    ? venusBiomes
+    : isSaturn
+      ? saturnBiomes
+      : isMars
+        ? marsBiomes
+        : biomes;
+const destinationKind =
+  isSaturn || isJupiter ? 'feature' : isMars || isVenus ? 'terrain' : 'biome';
+const overlayLabel = isJupiter
+  ? 'Cloud haze'
+  : isVenus
+    ? 'Cloud veil'
+    : isSaturn
+      ? 'Rings'
+      : isMars
+        ? 'Dust haze'
+        : 'Clouds';
 const container = ref<HTMLDivElement | null>(null);
 const {
   ready,
@@ -85,6 +92,7 @@ const {
       'is-venus': isVenus,
       'is-mars': isMars,
       'is-saturn': isSaturn,
+      'is-jupiter': isJupiter,
     }"
   >
     <SiteHeader><slot name="planet-picker" /></SiteHeader>
@@ -98,16 +106,26 @@ const {
         <span
           >PLANET /
           {{
-            isVenus ? '002' : isSaturn ? '006' : isMars ? '004' : '003'
+            isJupiter
+              ? '005'
+              : isVenus
+                ? '002'
+                : isSaturn
+                  ? '006'
+                  : isMars
+                    ? '004'
+                    : '003'
           }}</span
         ><span>{{
-          isSaturn
-            ? 'A WORLD WITH A LITTLE EXTRA'
-            : isMars
-              ? 'A NEW WORLD TO WANDER'
-              : isVenus
-                ? 'BENEATH THE GOLDEN CLOUDS'
-                : 'EST. 4.5 BILLION YEARS AGO'
+          isJupiter
+            ? 'A GIANT FULL OF WONDER'
+            : isSaturn
+              ? 'A WORLD WITH A LITTLE EXTRA'
+              : isMars
+                ? 'A NEW WORLD TO WANDER'
+                : isVenus
+                  ? 'BENEATH THE GOLDEN CLOUDS'
+                  : 'EST. 4.5 BILLION YEARS AGO'
         }}</span>
       </div>
       <div
@@ -137,28 +155,36 @@ const {
         <div class="eyebrow">
           <span class="status-dot" />
           {{
-            isSaturn
-              ? 'A LITTLE WONDER, A LOT OF RINGS'
-              : isMars
-                ? 'A LITTLE FURTHER FROM HOME'
-                : isVenus
-                  ? 'A LITTLE CLOSER TO THE SUN'
-                  : 'THE WORLD, A LITTLE DIFFERENT'
+            isJupiter
+              ? 'A LITTLE PERSPECTIVE, A GREAT BIG GIANT'
+              : isSaturn
+                ? 'A LITTLE WONDER, A LOT OF RINGS'
+                : isMars
+                  ? 'A LITTLE FURTHER FROM HOME'
+                  : isVenus
+                    ? 'A LITTLE CLOSER TO THE SUN'
+                    : 'THE WORLD, A LITTLE DIFFERENT'
           }}
         </div>
         <h1 tabindex="-1">
           {{ isVenus ? 'GOLD ' : isMars ? 'RED ' : 'SMALL '
           }}<br />BLOCKS.<br /><span>{{
-            isVenus
-              ? 'HOT WORLD.'
-              : isSaturn
-                ? 'BIG RINGS.'
-                : isMars
-                  ? 'NEW WORLD.'
-                  : 'BIG WORLD.'
+            isJupiter
+              ? 'GIANT WORLD.'
+              : isVenus
+                ? 'HOT WORLD.'
+                : isSaturn
+                  ? 'BIG RINGS.'
+                  : isMars
+                    ? 'NEW WORLD.'
+                    : 'BIG WORLD.'
           }}</span>
         </h1>
-        <p v-if="isVenus">
+        <p v-if="isJupiter">
+          Swirling bands. One great red storm.<br class="desktop-break" />
+          A gas giant, reimagined in blocks.
+        </p>
+        <p v-else-if="isVenus">
           Golden clouds. A world of volcanic rock.<br class="desktop-break" />
           A little mystery beneath the veil.
         </p>
@@ -228,13 +254,15 @@ const {
         <span class="orbit-cross">+</span
         ><span>{{ planetName.toUpperCase() }}</span
         ><span class="orbit-line" /><span>{{
-          isSaturn
-            ? 'THE RINGED PLANET'
-            : isMars
-              ? 'THE RED PLANET'
-              : isVenus
-                ? 'THE VEILED PLANET'
-                : 'THE OVERWORLD'
+          isJupiter
+            ? 'THE GAS GIANT'
+            : isSaturn
+              ? 'THE RINGED PLANET'
+              : isMars
+                ? 'THE RED PLANET'
+                : isVenus
+                  ? 'THE VEILED PLANET'
+                  : 'THE OVERWORLD'
         }}</span>
       </div>
       <div class="world-hint">
@@ -265,13 +293,15 @@ const {
       <div class="biome-picker">
         <div class="biome-caption">
           {{
-            isSaturn
-              ? 'BEYOND THE CLOUDS'
-              : isMars
-                ? 'OFF THE BEATEN PLANET'
-                : isVenus
-                  ? 'BENEATH THE VEIL'
-                  : 'A LITTLE BIT OF EVERYTHING'
+            isJupiter
+              ? 'A WORLD OF SWIRLING CLOUDS'
+              : isSaturn
+                ? 'BEYOND THE CLOUDS'
+                : isMars
+                  ? 'OFF THE BEATEN PLANET'
+                  : isVenus
+                    ? 'BENEATH THE VEIL'
+                    : 'A LITTLE BIT OF EVERYTHING'
           }}<span>{{ `JUMP TO A ${destinationKind.toUpperCase()}` }}</span>
         </div>
         <fieldset class="hotbar" :aria-label="`Jump to a ${destinationKind}`">
