@@ -1280,3 +1280,110 @@ p {
     transition: none;
   }
 }
+
+.is-jupiter {
+  --primary: #e3b08b;
+  --ring: #e3b08b;
+  --border: #423b2c;
+  background: #17120f;
+}
+.is-jupiter .topbar,
+.is-jupiter .footer {
+  background: #1b1511;
+}
+.is-jupiter .explorer {
+  background: radial-gradient(ellipse at 65% 48%, #4b3b2350, transparent 65%);
+}
+.is-jupiter.is-night .explorer {
+  background: radial-gradient(ellipse at 65% 48%, #242b4255, transparent 65%);
+}
+.is-jupiter .control-deck {
+  background: #201812;
+}
+.is-jupiter .intro-panel h1 span {
+  color: #e3b08b;
+  text-shadow: 3px 4px 0 #574526;
+}
+.is-jupiter .status-dot {
+  background: #e3b08b;
+  box-shadow: 0 0 10px #e3b08b40;
+}
+.is-jupiter .eyebrow,
+.is-jupiter .explore-note,
+.is-jupiter .biome-caption,
+.is-jupiter .orbit-cross {
+  color: #d0bc91;
+}
+.is-jupiter .intro-panel p,
+.is-jupiter .settings-group label,
+.is-jupiter .world-status strong {
+  color: #bfb5a0;
+}
+.is-jupiter .world-coordinate,
+.is-jupiter .world-hint,
+.is-jupiter .orbit-caption,
+.is-jupiter .footer,
+.is-jupiter .world-status div > span,
+.is-jupiter .biome-caption > span {
+  color: #a69c87;
+}
+.is-jupiter .intro-rule {
+  background: #786644;
+}
+.is-jupiter .hotbar {
+  background: #12100c;
+  border-color: #625438;
+  box-shadow: 0 4px 0 #090805;
+}
+.is-jupiter .biome-button {
+  background: linear-gradient(#302b1e, #242016);
+}
+.is-jupiter .biome-button:hover {
+  background: #443c28;
+  border-color: #bda46c;
+}
+.is-jupiter .biome-button.selected {
+  background: #4c4026;
+  border-color: #e3b08b;
+  box-shadow: inset 0 0 0 1px #e3b08b30;
+}
+.is-jupiter .biome-button > span:last-child,
+.is-jupiter .orbit-caption > span:nth-child(2) {
+  color: #e2d4b7;
+}
+.is-jupiter .time-list {
+  background: #232017e6 !important;
+}
+.is-jupiter .time-button[data-state='checked'] {
+  background: #4b4029 !important;
+  color: #f5e4bd !important;
+}
+.is-jupiter .world-tools {
+  background: #232017cc;
+}
+.is-jupiter .world-tools button {
+  color: #d7c6a2;
+}
+.is-jupiter .world-tools button:hover {
+  background: #e3b08b15;
+}
+.is-jupiter .settings-group [data-slot='switch'][data-state='checked'] {
+  background: #e3b08b;
+}
+.is-jupiter .settings-group [data-slot='switch-thumb'][data-state='checked'] {
+  background: #3d3017;
+}
+.is-jupiter :focus-visible {
+  outline-color: #e3b08b;
+}
+@media (max-width: 760px) {
+  .is-jupiter .earth-canvas {
+    left: 0;
+    right: 0;
+    top: 230px;
+    bottom: 45px;
+  }
+  .is-jupiter .intro-panel {
+    width: calc(100% - 48px);
+  }
+}

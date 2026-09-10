@@ -75,7 +75,7 @@ describe('planet navigation', () => {
     expect(document.title).toContain('Mars');
   });
 
-  it.each(['mercury', 'jupiter', 'uranus', 'neptune'])(
+  it.each(['mercury', 'uranus', 'neptune'])(
     'opens a direct %s link as a missing world without creating a renderer',
     async (id) => {
       const view = await start(`#/${id}`);
@@ -195,6 +195,25 @@ describe('planet navigation', () => {
     view.unmount();
     wrapper = undefined;
     expect(venusApi.dispose).toHaveBeenCalledOnce();
+  });
+
+  it('opens Jupiter, focuses its storm, toggles haze and cleans up on navigation', async () => {
+    const view = await start('#/jupiter');
+    expect(
+      view.find('[aria-label="Interactive Jupiter explorer"]').exists(),
+    ).toBe(true);
+    expect(document.title).toBe('Jupiter — The Gas Giant | Planetcraft');
+    expect(createEarthMock.mock.calls[0][3]).toBe('jupiter');
+    await view.get('button[title="Explore Great Red Spot"]').trigger('click');
+    expect(api.focus).toHaveBeenCalledWith(-22, 12);
+    await view.get('[aria-label="Show cloud haze"]').trigger('click');
+    expect(api.setClouds).toHaveBeenLastCalledWith(false);
+    await choose(view, 'saturn');
+    expect(api.dispose).toHaveBeenCalledOnce();
+    expect(createEarthMock.mock.calls[1][3]).toBe('saturn');
+    await choose(view, 'jupiter');
+    expect(createEarthMock.mock.calls[2][3]).toBe('jupiter');
+    expect(document.activeElement).toBe(view.get('h1').element);
   });
 
   it('recovers from an unknown planet using Back to Earth', async () => {
