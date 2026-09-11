@@ -75,7 +75,7 @@ describe('planet navigation', () => {
     expect(document.title).toContain('Mars');
   });
 
-  it.each(['mercury', 'uranus', 'neptune'])(
+  it.each(['uranus', 'neptune'])(
     'opens a direct %s link as a missing world without creating a renderer',
     async (id) => {
       const view = await start(`#/${id}`);
@@ -88,6 +88,23 @@ describe('planet navigation', () => {
       expect(createEarthMock).not.toHaveBeenCalled();
     },
   );
+
+  it('opens Mercury directly and supports terrain, exosphere, and navigation cleanup', async () => {
+    const view = await start('#/mercury');
+    expect(
+      view.find('[aria-label="Interactive Mercury explorer"]').exists(),
+    ).toBe(true);
+    expect(view.get('.planet-picker-value').text()).toBe('Mercury');
+    expect(view.get('main').classes()).toContain('is-mercury');
+    expect(document.title).toBe('Mercury — The Swift Planet | Planetcraft');
+    expect(createEarthMock.mock.calls[0][3]).toBe('mercury');
+    await view.get('button[title="Explore Caloris Basin"]').trigger('click');
+    expect(api.focus).toHaveBeenCalledWith(30, 160);
+    await view.get('[aria-label="Show exosphere"]').trigger('click');
+    expect(api.setClouds).toHaveBeenLastCalledWith(false);
+    await choose(view, 'earth');
+    expect(api.dispose).toHaveBeenCalledOnce();
+  });
 
   it('keeps the selection in sync with browser back and forward', async () => {
     const view = await start('#/earth');

@@ -30,7 +30,9 @@ export function usePlanetRoute() {
       document.title =
         planetId.value === 'earth'
           ? 'Planetcraft — Worlds in blocks'
-          : planetId.value === 'venus'
+          : planetId.value === 'mercury'
+            ? 'Mercury — The Swift Planet | Planetcraft'
+            : planetId.value === 'venus'
             ? 'Venus — The Veiled Planet | Planetcraft'
             : planetId.value === 'mars'
               ? 'Mars — The Red Planet | Planetcraft'

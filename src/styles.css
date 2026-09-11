@@ -1190,6 +1190,113 @@ a {
   }
 }
 
+.is-mercury {
+  --primary: #e3be7b;
+  --ring: #e3be7b;
+  --border: #403b34;
+  background: #100f0d;
+}
+.is-mercury .topbar,
+.is-mercury .footer {
+  background: #15130f;
+}
+.is-mercury .explorer {
+  background: radial-gradient(ellipse at 65% 48%, #57452950, transparent 64%);
+}
+.is-mercury.is-night .explorer {
+  background: radial-gradient(ellipse at 65% 48%, #25242a55, transparent 64%);
+}
+.is-mercury .control-deck {
+  background: #191713;
+}
+.is-mercury .intro-panel h1 span {
+  color: #e3be7b;
+  text-shadow: 3px 4px 0 #594521;
+}
+.is-mercury .status-dot {
+  background: #e3be7b;
+  box-shadow: 0 0 10px #e3be7b40;
+}
+.is-mercury .eyebrow,
+.is-mercury .explore-note,
+.is-mercury .biome-caption,
+.is-mercury .orbit-cross {
+  color: #cbb38c;
+}
+.is-mercury .intro-panel p,
+.is-mercury .settings-group label,
+.is-mercury .world-status strong {
+  color: #bcb4a7;
+}
+.is-mercury .world-coordinate,
+.is-mercury .world-hint,
+.is-mercury .orbit-caption,
+.is-mercury .footer,
+.is-mercury .world-status div > span,
+.is-mercury .biome-caption > span {
+  color: #9f978a;
+}
+.is-mercury .intro-rule {
+  background: #74644b;
+}
+.is-mercury .hotbar {
+  background: #100f0c;
+  border-color: #5e5548;
+  box-shadow: 0 4px 0 #070705;
+}
+.is-mercury .biome-button {
+  background: linear-gradient(#2e2a24, #211e19);
+}
+.is-mercury .biome-button:hover {
+  background: #3b352c;
+  border-color: #b99c69;
+}
+.is-mercury .biome-button.selected {
+  background: #443927;
+  border-color: #e3be7b;
+  box-shadow: inset 0 0 0 1px #e3be7b30;
+}
+.is-mercury .biome-button > span:last-child,
+.is-mercury .orbit-caption > span:nth-child(2) {
+  color: #ddd1bd;
+}
+.is-mercury .time-list {
+  background: #211e18e6 !important;
+}
+.is-mercury .time-button[data-state='checked'] {
+  background: #493c27 !important;
+  color: #f4ddb4 !important;
+}
+.is-mercury .world-tools {
+  background: #211e18cc;
+}
+.is-mercury .world-tools button {
+  color: #d4c4aa;
+}
+.is-mercury .world-tools button:hover {
+  background: #e3be7b15;
+}
+.is-mercury .settings-group [data-slot='switch'][data-state='checked'] {
+  background: #e3be7b;
+}
+.is-mercury .settings-group [data-slot='switch-thumb'][data-state='checked'] {
+  background: #3a2d18;
+}
+.is-mercury :focus-visible {
+  outline-color: #e3be7b;
+}
+@media (max-width: 760px) {
+  .is-mercury .earth-canvas {
+    left: 0;
+    right: 0;
+    top: 230px;
+    bottom: 45px;
+  }
+  .is-mercury .intro-panel {
+    width: calc(100% - 48px);
+  }
+}
+
 svg {
   display: block;
   flex-shrink: 0;

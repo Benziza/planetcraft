@@ -7,6 +7,7 @@ import {
   type Ref,
 } from 'vue';
 import { biomes } from '../data/biomes';
+import { mercuryBiomes } from '../data/mercury-biomes';
 import { venusBiomes } from '../data/venus-biomes';
 import { marsBiomes } from '../data/mars-biomes';
 import { jupiterBiomes } from '../data/jupiter-biomes';
@@ -15,12 +16,14 @@ import type { BiomeId, EarthAPI } from '../lib/voxel-earth';
 
 export function useEarth(
   container: Ref<HTMLDivElement | null>,
-  planetId: 'earth' | 'mars' | 'saturn' | 'venus' | 'jupiter' = 'earth',
+  planetId: 'earth' | 'mercury' | 'mars' | 'saturn' | 'venus' | 'jupiter' = 'earth',
 ) {
   const destinations =
     planetId === 'jupiter'
       ? jupiterBiomes
-      : planetId === 'venus'
+      : planetId === 'mercury'
+        ? mercuryBiomes
+        : planetId === 'venus'
         ? venusBiomes
         : planetId === 'saturn'
           ? saturnBiomes
