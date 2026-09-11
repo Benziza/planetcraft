@@ -19,6 +19,7 @@ watch(planetId, async () => {
   <div ref="page">
     <EarthExplorer
       v-if="
+        planetId === 'mercury' ||
         planetId === 'venus' ||
         planetId === 'earth' ||
         planetId === 'mars' ||

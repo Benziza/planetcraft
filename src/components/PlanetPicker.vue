@@ -108,6 +108,14 @@ function restoreFocus(event: Event) {
   --picker-muted: #c09c86;
   --picker-hover: #493023;
 }
+.planet-picker[data-planet='mercury'],
+:global(.planet-menu[data-planet='mercury']) {
+  --picker-background: #201e1a;
+  --picker-border: #6b6255;
+  --picker-accent: #e3be7b;
+  --picker-muted: #aaa092;
+  --picker-hover: #373129;
+}
 .planet-picker[data-planet='saturn'],
 :global(.planet-menu[data-planet='saturn']) {
   --picker-background: #262219;

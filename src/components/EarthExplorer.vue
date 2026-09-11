@@ -18,6 +18,7 @@ import {
 import { RadioGroupItem, RadioGroupRoot } from 'reka-ui';
 import { useEarth } from '../composables/useEarth';
 import { biomes } from '../data/biomes';
+import { mercuryBiomes } from '../data/mercury-biomes';
 import { venusBiomes } from '../data/venus-biomes';
 import { marsBiomes } from '../data/mars-biomes';
 import { jupiterBiomes } from '../data/jupiter-biomes';
@@ -27,19 +28,22 @@ import WorldSwitch from './WorldSwitch.vue';
 
 const props = withDefaults(
   defineProps<{
-    planetId?: 'earth' | 'mars' | 'saturn' | 'venus' | 'jupiter';
+    planetId?: 'earth' | 'mercury' | 'mars' | 'saturn' | 'venus' | 'jupiter';
   }>(),
   {
     planetId: 'earth',
   },
 );
 const isJupiter = props.planetId === 'jupiter';
+const isMercury = props.planetId === 'mercury';
 const isVenus = props.planetId === 'venus';
 const isMars = props.planetId === 'mars';
 const isSaturn = props.planetId === 'saturn';
 const planetName = isJupiter
   ? 'Jupiter'
-  : isVenus
+  : isMercury
+    ? 'Mercury'
+    : isVenus
     ? 'Venus'
     : isSaturn
       ? 'Saturn'
@@ -48,7 +52,9 @@ const planetName = isJupiter
         : 'Earth';
 const destinations = isJupiter
   ? jupiterBiomes
-  : isVenus
+  : isMercury
+    ? mercuryBiomes
+    : isVenus
     ? venusBiomes
     : isSaturn
       ? saturnBiomes
@@ -56,10 +62,12 @@ const destinations = isJupiter
         ? marsBiomes
         : biomes;
 const destinationKind =
-  isSaturn || isJupiter ? 'feature' : isMars || isVenus ? 'terrain' : 'biome';
+  isSaturn || isJupiter ? 'feature' : isMars || isVenus || isMercury ? 'terrain' : 'biome';
 const overlayLabel = isJupiter
   ? 'Cloud haze'
-  : isVenus
+  : isMercury
+    ? 'Exosphere'
+    : isVenus
     ? 'Cloud veil'
     : isSaturn
       ? 'Rings'
@@ -89,6 +97,7 @@ const {
     class="earth-app"
     :class="{
       'is-night': night,
+      'is-mercury': isMercury,
       'is-venus': isVenus,
       'is-mars': isMars,
       'is-saturn': isSaturn,
@@ -108,7 +117,9 @@ const {
           {{
             isJupiter
               ? '005'
-              : isVenus
+              : isMercury
+                ? '001'
+                : isVenus
                 ? '002'
                 : isSaturn
                   ? '006'
@@ -119,7 +130,9 @@ const {
         ><span>{{
           isJupiter
             ? 'A GIANT FULL OF WONDER'
-            : isSaturn
+            : isMercury
+              ? 'QUICK AROUND THE SUN'
+              : isSaturn
               ? 'A WORLD WITH A LITTLE EXTRA'
               : isMars
                 ? 'A NEW WORLD TO WANDER'
@@ -157,7 +170,9 @@ const {
           {{
             isJupiter
               ? 'A LITTLE PERSPECTIVE, A GREAT BIG GIANT'
-              : isSaturn
+              : isMercury
+                ? 'A LITTLE WORLD, CLOSE TO THE SUN'
+                : isSaturn
                 ? 'A LITTLE WONDER, A LOT OF RINGS'
                 : isMars
                   ? 'A LITTLE FURTHER FROM HOME'
@@ -167,11 +182,13 @@ const {
           }}
         </div>
         <h1 tabindex="-1">
-          {{ isVenus ? 'GOLD ' : isMars ? 'RED ' : 'SMALL '
+          {{ isVenus ? 'GOLD ' : isMars ? 'RED ' : isMercury ? 'GREY ' : 'SMALL '
           }}<br />BLOCKS.<br /><span>{{
             isJupiter
               ? 'GIANT WORLD.'
-              : isVenus
+              : isMercury
+                ? 'SWIFT WORLD.'
+                : isVenus
                 ? 'HOT WORLD.'
                 : isSaturn
                   ? 'BIG RINGS.'
@@ -180,7 +197,11 @@ const {
                     : 'BIG WORLD.'
           }}</span>
         </h1>
-        <p v-if="isJupiter">
+        <p v-if="isMercury">
+          Ancient craters. Sunlit stone.<br class="desktop-break" />
+          The smallest world, moving fast.
+        </p>
+        <p v-else-if="isJupiter">
           Swirling bands. One great red storm.<br class="desktop-break" />
           A gas giant, reimagined in blocks.
         </p>
@@ -256,7 +277,9 @@ const {
         ><span class="orbit-line" /><span>{{
           isJupiter
             ? 'THE GAS GIANT'
-            : isSaturn
+            : isMercury
+              ? 'THE SWIFT PLANET'
+              : isSaturn
               ? 'THE RINGED PLANET'
               : isMars
                 ? 'THE RED PLANET'
@@ -282,7 +305,7 @@ const {
         /></label>
         <label for="show-clouds"
           ><component
-            :is="isSaturn ? Orbit : isMars ? Wind : Cloud"
+            :is="isSaturn ? Orbit : isMars ? Wind : isMercury ? Sun : Cloud"
             :size="17" /><span>{{ overlayLabel }}</span
           ><WorldSwitch
             id="show-clouds"
@@ -295,7 +318,9 @@ const {
           {{
             isJupiter
               ? 'A WORLD OF SWIRLING CLOUDS'
-              : isSaturn
+              : isMercury
+                ? 'SCARS FROM AN ANCIENT SKY'
+                : isSaturn
                 ? 'BEYOND THE CLOUDS'
                 : isMars
                   ? 'OFF THE BEATEN PLANET'
