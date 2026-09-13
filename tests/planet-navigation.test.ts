@@ -75,19 +75,16 @@ describe('planet navigation', () => {
     expect(document.title).toContain('Mars');
   });
 
-  it.each(['uranus', 'neptune'])(
-    'opens a direct %s link as a missing world without creating a renderer',
-    async (id) => {
-      const view = await start(`#/${id}`);
-      expect(view.get('h1').text()).toContain('404');
-      expect(view.text()).toContain('NOT FOUND');
-      expect(view.get('.planet-picker-value').text()).toBe(
-        planets.find((planet) => planet.id === id)!.name,
-      );
-      expect(view.find('.earth-canvas').exists()).toBe(false);
-      expect(createEarthMock).not.toHaveBeenCalled();
-    },
-  );
+  it('opens a direct Neptune link as a missing world without creating a renderer', async () => {
+    const view = await start('#/neptune');
+    expect(view.get('h1').text()).toContain('404');
+    expect(view.text()).toContain('NOT FOUND');
+    expect(view.get('.planet-picker-value').text()).toBe(
+      planets.find((planet) => planet.id === 'neptune')!.name,
+    );
+    expect(view.find('.earth-canvas').exists()).toBe(false);
+    expect(createEarthMock).not.toHaveBeenCalled();
+  });
 
   it('opens Mercury directly and supports terrain, exosphere, and navigation cleanup', async () => {
     const view = await start('#/mercury');
@@ -230,6 +227,27 @@ describe('planet navigation', () => {
     expect(createEarthMock.mock.calls[1][3]).toBe('saturn');
     await choose(view, 'jupiter');
     expect(createEarthMock.mock.calls[2][3]).toBe('jupiter');
+    expect(document.activeElement).toBe(view.get('h1').element);
+  });
+
+  it('opens Uranus, focuses its rings, and cleans up on navigation', async () => {
+    const view = await start('#/uranus');
+    expect(
+      view.find('[aria-label="Interactive Uranus explorer"]').exists(),
+    ).toBe(true);
+    expect(view.get('.planet-picker-value').text()).toBe('Uranus');
+    expect(view.get('main').classes()).toContain('is-uranus');
+    expect(document.title).toBe(
+      'Uranus — The Sideways Planet | Planetcraft',
+    );
+    expect(createEarthMock.mock.calls[0][3]).toBe('uranus');
+    await view.get('button[title="Explore Dark narrow rings"]').trigger('click');
+    expect(api.focus).toHaveBeenCalledWith(18, 0);
+    await view.get('[aria-label="Show rings"]').trigger('click');
+    expect(api.setClouds).toHaveBeenLastCalledWith(false);
+    await choose(view, 'earth');
+    expect(api.dispose).toHaveBeenCalledOnce();
+    expect(createEarthMock.mock.calls[1][3]).toBe('earth');
     expect(document.activeElement).toBe(view.get('h1').element);
   });
 

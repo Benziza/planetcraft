@@ -1494,3 +1494,110 @@ p {
     width: calc(100% - 48px);
   }
 }
+
+.is-uranus {
+  --primary: #8edce0;
+  --ring: #8edce0;
+  --border: #27454b;
+  background: #071216;
+}
+.is-uranus .topbar,
+.is-uranus .footer {
+  background: #0b181c;
+}
+.is-uranus .explorer {
+  background: radial-gradient(ellipse at 65% 48%, #1a667050, transparent 65%);
+}
+.is-uranus.is-night .explorer {
+  background: radial-gradient(ellipse at 65% 48%, #182d4655, transparent 65%);
+}
+.is-uranus .control-deck {
+  background: #0d1e22;
+}
+.is-uranus .intro-panel h1 span {
+  color: #8edce0;
+  text-shadow: 3px 4px 0 #1d555d;
+}
+.is-uranus .status-dot {
+  background: #8edce0;
+  box-shadow: 0 0 10px #8edce040;
+}
+.is-uranus .eyebrow,
+.is-uranus .explore-note,
+.is-uranus .biome-caption,
+.is-uranus .orbit-cross {
+  color: #84ccd1;
+}
+.is-uranus .intro-panel p,
+.is-uranus .settings-group label,
+.is-uranus .world-status strong {
+  color: #a9c9cb;
+}
+.is-uranus .world-coordinate,
+.is-uranus .world-hint,
+.is-uranus .orbit-caption,
+.is-uranus .footer,
+.is-uranus .world-status div > span,
+.is-uranus .biome-caption > span {
+  color: #7fa4a8;
+}
+.is-uranus .intro-rule {
+  background: #3e737a;
+}
+.is-uranus .hotbar {
+  background: #071317;
+  border-color: #315c63;
+  box-shadow: 0 4px 0 #03090b;
+}
+.is-uranus .biome-button {
+  background: linear-gradient(#173238, #10262b);
+}
+.is-uranus .biome-button:hover {
+  background: #21464d;
+  border-color: #69b4bc;
+}
+.is-uranus .biome-button.selected {
+  background: #1d5158;
+  border-color: #8edce0;
+  box-shadow: inset 0 0 0 1px #8edce030;
+}
+.is-uranus .biome-button > span:last-child,
+.is-uranus .orbit-caption > span:nth-child(2) {
+  color: #c0e1e2;
+}
+.is-uranus .time-list {
+  background: #11272ce6 !important;
+}
+.is-uranus .time-button[data-state='checked'] {
+  background: #24545bcc !important;
+  color: #d9f5f4 !important;
+}
+.is-uranus .world-tools {
+  background: #11272ccc;
+}
+.is-uranus .world-tools button {
+  color: #addadd;
+}
+.is-uranus .world-tools button:hover {
+  background: #8edce015;
+}
+.is-uranus .settings-group [data-slot='switch'][data-state='checked'] {
+  background: #8edce0;
+}
+.is-uranus .settings-group [data-slot='switch-thumb'][data-state='checked'] {
+  background: #12363c;
+}
+.is-uranus :focus-visible {
+  outline-color: #8edce0;
+}
+@media (max-width: 760px) {
+  .is-uranus .earth-canvas {
+    left: 0;
+    right: 0;
+    top: 230px;
+    bottom: 45px;
+  }
+  .is-uranus .intro-panel {
+    width: calc(100% - 48px);
+  }
+}

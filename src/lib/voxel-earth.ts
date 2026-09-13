@@ -7,9 +7,10 @@ import { venusPalette, sampleVenus, type VenusBiomeId } from './venus-terrain';
 import { marsPalette, sampleMars, type MarsBiomeId } from './mars-terrain';
 import { createSaturn } from './voxel-saturn';
 import type { SaturnBiomeId } from './saturn-terrain';
+import type { UranusBiomeId } from './uranus-terrain';
 
 type SurfaceBiomeId = 'forest' | 'desert' | 'ocean' | 'snow' | 'mountain' | MarsBiomeId | VenusBiomeId | MercuryBiomeId;
-export type BiomeId = SurfaceBiomeId | SaturnBiomeId | JupiterBiomeId;
+export type BiomeId = SurfaceBiomeId | SaturnBiomeId | JupiterBiomeId | UranusBiomeId;
 export type EarthAPI = {
   blockCount: number;
   setNight: (value: boolean) => void;
@@ -29,7 +30,11 @@ const palette = { ocean: '#2675a6', forest: '#629441', desert: '#d3b879', snow: 
 const radians = Math.PI / 180;
 function noise(x: number, y: number, z: number) { const value = Math.sin(x * 127.1 + y * 311.7 + z * 74.7) * 43758.5453; return value - Math.floor(value); }
 
-export async function createEarth(container: HTMLElement, signal: AbortSignal, callbacks: Callbacks, planetId: 'earth' | 'mercury' | 'mars' | 'saturn' | 'venus' | 'jupiter' = 'earth'): Promise<EarthAPI> {
+export async function createEarth(container: HTMLElement, signal: AbortSignal, callbacks: Callbacks, planetId: 'earth' | 'mercury' | 'mars' | 'saturn' | 'venus' | 'jupiter' | 'uranus' = 'earth'): Promise<EarthAPI> {
+  if (planetId === 'uranus') {
+    const { createUranus } = await import('./voxel-uranus');
+    return createUranus(container, signal, callbacks);
+  }
   if (planetId === 'jupiter') return createJupiter(container, signal, callbacks);
   if (planetId === 'saturn') return createSaturn(container, signal, callbacks);
   const isMars = planetId === 'mars';

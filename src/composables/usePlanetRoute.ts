@@ -40,6 +40,8 @@ export function usePlanetRoute() {
                 ? 'Jupiter — The Gas Giant | Planetcraft'
                 : planetId.value === 'saturn'
                   ? 'Saturn — The Ringed Planet | Planetcraft'
+                  : planetId.value === 'uranus'
+                    ? 'Uranus — The Sideways Planet | Planetcraft'
                   : `${planetName.value} — 404 Not Found | Planetcraft`;
     },
     { immediate: true },

@@ -12,14 +12,24 @@ import { venusBiomes } from '../data/venus-biomes';
 import { marsBiomes } from '../data/mars-biomes';
 import { jupiterBiomes } from '../data/jupiter-biomes';
 import { saturnBiomes } from '../data/saturn-biomes';
+import { uranusBiomes } from '../data/uranus-biomes';
 import type { BiomeId, EarthAPI } from '../lib/voxel-earth';
 
 export function useEarth(
   container: Ref<HTMLDivElement | null>,
-  planetId: 'earth' | 'mercury' | 'mars' | 'saturn' | 'venus' | 'jupiter' = 'earth',
+  planetId:
+    | 'earth'
+    | 'mercury'
+    | 'mars'
+    | 'saturn'
+    | 'venus'
+    | 'jupiter'
+    | 'uranus' = 'earth',
 ) {
   const destinations =
-    planetId === 'jupiter'
+    planetId === 'uranus'
+      ? uranusBiomes
+      : planetId === 'jupiter'
       ? jupiterBiomes
       : planetId === 'mercury'
         ? mercuryBiomes
@@ -100,7 +110,8 @@ export function useEarth(
     if (!ready.value || !biome) return;
     active.value = biome.id;
     rotating.value = false;
-    if (biome.id === 'saturn-rings') clouds.value = true;
+    if (biome.id === 'saturn-rings' || biome.id === 'uranus-rings')
+      clouds.value = true;
     api?.focus(biome.lat, biome.lon);
   }
 

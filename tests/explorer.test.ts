@@ -72,7 +72,9 @@ describe('Vue Earth explorer', () => {
     vi.unstubAllEnvs();
   });
 
-  async function start(planetId: 'earth' | 'mars' | 'saturn' = 'earth') {
+  async function start(
+    planetId: 'earth' | 'mars' | 'saturn' | 'uranus' = 'earth',
+  ) {
     wrapper = mount(EarthExplorer, {
       attachTo: document.body,
       props: { planetId },
@@ -159,6 +161,37 @@ describe('Vue Earth explorer', () => {
     expect(view.find('.biome-button[aria-pressed="true"]').exists()).toBe(
       false,
     );
+  });
+
+  it('explores Uranus features, sideways rings, and picked blocks', async () => {
+    const view = await start('uranus');
+    expect(view.get('main').classes()).toContain('is-uranus');
+    expect(
+      view.findAll('.biome-button').map((button) => button.attributes('title')),
+    ).toEqual([
+      'Explore Faint cloud bands',
+      'Explore Bright methane storms',
+      'Explore Pale polar cap',
+      'Explore Polar cloud collar',
+      'Explore Dark narrow rings',
+    ]);
+
+    await view.get('button[title="Explore Pale polar cap"]').trigger('click');
+    expect(api.focus).toHaveBeenLastCalledWith(76, 0);
+    expect(api.setRotate).toHaveBeenLastCalledWith(false);
+    await view.get('button[aria-label="Show rings"]').trigger('click');
+    expect(api.setClouds).toHaveBeenLastCalledWith(false);
+    await view.get('button[title="Explore Dark narrow rings"]').trigger('click');
+    expect(api.focus).toHaveBeenLastCalledWith(18, 0);
+    expect(api.setClouds).toHaveBeenLastCalledWith(true);
+
+    callbacks().onSelect('uranus-storms', 27, -42);
+    await nextTick();
+    expect(
+      view
+        .get('button[title="Explore Bright methane storms"]')
+        .attributes('aria-pressed'),
+    ).toBe('true');
   });
 
   it.each(['/', '/planetcraft/'])(
@@ -273,7 +306,7 @@ describe('Vue Earth explorer', () => {
     expect(api.setRotate).toHaveBeenLastCalledWith(true);
   });
 
-  it.each(['earth', 'saturn'] as const)(
+  it.each(['earth', 'saturn', 'uranus'] as const)(
     'respects reduced motion on %s initialization and reset',
     async (planetId) => {
       reducedMotion = true;
@@ -299,7 +332,7 @@ describe('Vue Earth explorer', () => {
     expect(view.get('.biome-button').attributes('disabled')).toBeDefined();
   });
 
-  it.each(['earth', 'saturn'] as const)(
+  it.each(['earth', 'saturn', 'uranus'] as const)(
     'aborts %s initialization and disposes a late scene after unmount',
     async (planetId) => {
       const pending = deferred<EarthAPI>();

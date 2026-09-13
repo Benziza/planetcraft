@@ -24,7 +24,8 @@ watch(planetId, async () => {
         planetId === 'earth' ||
         planetId === 'mars' ||
         planetId === 'saturn' ||
-        planetId === 'jupiter'
+        planetId === 'jupiter' ||
+        planetId === 'uranus'
       "
       :key="planetId"
       :planet-id="planetId"

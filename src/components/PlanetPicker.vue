@@ -124,6 +124,14 @@ function restoreFocus(event: Event) {
   --picker-muted: #b9aa8b;
   --picker-hover: #403726;
 }
+.planet-picker[data-planet='uranus'],
+:global(.planet-menu[data-planet='uranus']) {
+  --picker-background: #13252a;
+  --picker-border: #46727a;
+  --picker-accent: #8edce0;
+  --picker-muted: #91b4b7;
+  --picker-hover: #203c42;
+}
 .planet-picker {
   position: absolute;
   left: 50%;
