@@ -132,6 +132,14 @@ function restoreFocus(event: Event) {
   --picker-muted: #91b4b7;
   --picker-hover: #203c42;
 }
+.planet-picker[data-planet='neptune'],
+:global(.planet-menu[data-planet='neptune']) {
+  --picker-background: #0b1630;
+  --picker-border: #315fa2;
+  --picker-accent: #70b7ff;
+  --picker-muted: #829bc2;
+  --picker-hover: #152b55;
+}
 .planet-picker {
   position: absolute;
   left: 50%;

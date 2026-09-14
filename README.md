@@ -4,7 +4,7 @@ Explore a universe of blocks, inspired by Minecraft.
 
 ![Earth in day and night, followed by the Mars 404 screen](.github/assets/planetcraft-demo.gif)
 
-Choose a planet and start exploring. Mercury, Venus, Earth, Mars, Jupiter, Saturn, and Uranus are ready: give them a spin, discover their features, and switch between day and night. Mercury adds smooth plains, impact craters, the Caloris Basin, lobed scarps, polar ice deposits, and a faint exosphere. Its terrain is a playful interpretation, not a geographic map.
+Choose a planet and start exploring. Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, and Neptune are ready: give them a spin, discover their features, and switch between day and night. Mercury adds smooth plains, impact craters, the Caloris Basin, lobed scarps, polar ice deposits, and a faint exosphere. Its terrain is a playful interpretation, not a geographic map.
 
 Saturn adds golden cloud bands, storm lanes, polar haze, a north-pole hexagon, and icy voxel rings with a visible Cassini division. Toggle the rings or pick a feature to take a closer look. Its clouds and rings are a playful interpretation of a gas giant, not a solid surface.
 
@@ -12,8 +12,8 @@ Jupiter adds warm cloud belts, bright zones, the Great Red Spot, white oval stor
 
 Uranus adds pale methane cloud bands, bright storms, a polar cap and collar, its extreme sideways tilt, and a set of dark narrow voxel rings. Toggle the rings or jump to a feature for a closer look. Its atmosphere and rings are an illustrative interpretation of an ice giant.
 
-Neptune is still waiting for its first blocks.
+Neptune adds vivid blue cloud bands, the Great Dark Spot, the fast-moving Scooter cloud, bright polar clouds, and faint voxel rings. Toggle the rings or jump to a feature for a closer look. Its atmosphere and rings are an illustrative interpretation of an ice giant.
 
 [Explore Planetcraft](https://benziza.github.io/planetcraft/)
 
-To preview locally, run `npm ci` and `npm run dev`, then open `http://localhost:3000/#/uranus`.
+To preview locally, run `npm ci` and `npm run dev`, then open `http://localhost:3000/#/neptune`.

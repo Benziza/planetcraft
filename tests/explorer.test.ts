@@ -73,7 +73,7 @@ describe('Vue Earth explorer', () => {
   });
 
   async function start(
-    planetId: 'earth' | 'mars' | 'saturn' | 'uranus' = 'earth',
+    planetId: 'earth' | 'mars' | 'saturn' | 'uranus' | 'neptune' = 'earth',
   ) {
     wrapper = mount(EarthExplorer, {
       attachTo: document.body,
@@ -181,7 +181,9 @@ describe('Vue Earth explorer', () => {
     expect(api.setRotate).toHaveBeenLastCalledWith(false);
     await view.get('button[aria-label="Show rings"]').trigger('click');
     expect(api.setClouds).toHaveBeenLastCalledWith(false);
-    await view.get('button[title="Explore Dark narrow rings"]').trigger('click');
+    await view
+      .get('button[title="Explore Dark narrow rings"]')
+      .trigger('click');
     expect(api.focus).toHaveBeenLastCalledWith(18, 0);
     expect(api.setClouds).toHaveBeenLastCalledWith(true);
 
@@ -190,6 +192,37 @@ describe('Vue Earth explorer', () => {
     expect(
       view
         .get('button[title="Explore Bright methane storms"]')
+        .attributes('aria-pressed'),
+    ).toBe('true');
+  });
+
+  it('explores Neptune storms, clouds, rings, and picked blocks', async () => {
+    const view = await start('neptune');
+    expect(view.get('main').classes()).toContain('is-neptune');
+    expect(
+      view.findAll('.biome-button').map((button) => button.attributes('title')),
+    ).toEqual([
+      'Explore Deep blue cloud bands',
+      'Explore Great Dark Spot',
+      'Explore Fast white Scooter cloud',
+      'Explore Bright polar clouds',
+      'Explore Faint ring arcs',
+    ]);
+
+    await view.get('button[title="Explore Great Dark Spot"]').trigger('click');
+    expect(api.focus).toHaveBeenLastCalledWith(-22, -55);
+    expect(api.setRotate).toHaveBeenLastCalledWith(false);
+    await view.get('button[aria-label="Show rings"]').trigger('click');
+    expect(api.setClouds).toHaveBeenLastCalledWith(false);
+    await view.get('button[title="Explore Faint ring arcs"]').trigger('click');
+    expect(api.focus).toHaveBeenLastCalledWith(20, 0);
+    expect(api.setClouds).toHaveBeenLastCalledWith(true);
+
+    callbacks().onSelect('neptune-scooter', -42, 32);
+    await nextTick();
+    expect(
+      view
+        .get('button[title="Explore Fast white Scooter cloud"]')
         .attributes('aria-pressed'),
     ).toBe('true');
   });
@@ -306,7 +339,7 @@ describe('Vue Earth explorer', () => {
     expect(api.setRotate).toHaveBeenLastCalledWith(true);
   });
 
-  it.each(['earth', 'saturn', 'uranus'] as const)(
+  it.each(['earth', 'saturn', 'uranus', 'neptune'] as const)(
     'respects reduced motion on %s initialization and reset',
     async (planetId) => {
       reducedMotion = true;
@@ -332,7 +365,7 @@ describe('Vue Earth explorer', () => {
     expect(view.get('.biome-button').attributes('disabled')).toBeDefined();
   });
 
-  it.each(['earth', 'saturn', 'uranus'] as const)(
+  it.each(['earth', 'saturn', 'uranus', 'neptune'] as const)(
     'aborts %s initialization and disposes a late scene after unmount',
     async (planetId) => {
       const pending = deferred<EarthAPI>();
