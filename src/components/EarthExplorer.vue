@@ -24,6 +24,7 @@ import { marsBiomes } from '../data/mars-biomes';
 import { jupiterBiomes } from '../data/jupiter-biomes';
 import { saturnBiomes } from '../data/saturn-biomes';
 import { uranusBiomes } from '../data/uranus-biomes';
+import { neptuneBiomes } from '../data/neptune-biomes';
 import SiteHeader from './SiteHeader.vue';
 import WorldSwitch from './WorldSwitch.vue';
 
@@ -36,7 +37,8 @@ const props = withDefaults(
       | 'saturn'
       | 'venus'
       | 'jupiter'
-      | 'uranus';
+      | 'uranus'
+      | 'neptune';
   }>(),
   {
     planetId: 'earth',
@@ -48,7 +50,10 @@ const isVenus = props.planetId === 'venus';
 const isMars = props.planetId === 'mars';
 const isSaturn = props.planetId === 'saturn';
 const isUranus = props.planetId === 'uranus';
-const planetName = isUranus
+const isNeptune = props.planetId === 'neptune';
+const planetName = isNeptune
+  ? 'Neptune'
+  : isUranus
   ? 'Uranus'
   : isJupiter
   ? 'Jupiter'
@@ -61,7 +66,9 @@ const planetName = isUranus
       : isMars
         ? 'Mars'
         : 'Earth';
-const destinations = isUranus
+const destinations = isNeptune
+  ? neptuneBiomes
+  : isUranus
   ? uranusBiomes
   : isJupiter
   ? jupiterBiomes
@@ -75,12 +82,14 @@ const destinations = isUranus
         ? marsBiomes
         : biomes;
 const destinationKind =
-  isSaturn || isJupiter || isUranus
+  isSaturn || isJupiter || isUranus || isNeptune
     ? 'feature'
     : isMars || isVenus || isMercury
       ? 'terrain'
       : 'biome';
-const overlayLabel = isUranus
+const overlayLabel = isNeptune
+  ? 'Rings'
+  : isUranus
   ? 'Rings'
   : isJupiter
   ? 'Cloud haze'
@@ -122,6 +131,7 @@ const {
       'is-saturn': isSaturn,
       'is-jupiter': isJupiter,
       'is-uranus': isUranus,
+      'is-neptune': isNeptune,
     }"
   >
     <SiteHeader><slot name="planet-picker" /></SiteHeader>
@@ -135,7 +145,9 @@ const {
         <span
           >PLANET /
           {{
-            isUranus
+            isNeptune
+              ? '008'
+              : isUranus
               ? '007'
               : isJupiter
               ? '005'
@@ -150,7 +162,9 @@ const {
                     : '003'
           }}</span
         ><span>{{
-          isUranus
+          isNeptune
+            ? 'THE WILDEST WINDS IN THE SOLAR SYSTEM'
+            : isUranus
             ? 'AN ICE GIANT ON ITS SIDE'
             : isJupiter
             ? 'A GIANT FULL OF WONDER'
@@ -192,7 +206,9 @@ const {
         <div class="eyebrow">
           <span class="status-dot" />
           {{
-            isUranus
+            isNeptune
+              ? 'A LITTLE FURTHER, A LOT MORE BLUE'
+              : isUranus
               ? 'A LITTLE TILT, A WHOLE NEW VIEW'
               : isJupiter
               ? 'A LITTLE PERSPECTIVE, A GREAT BIG GIANT'
@@ -208,9 +224,11 @@ const {
           }}
         </div>
         <h1 tabindex="-1">
-          {{ isUranus ? 'SIDEWAYS ' : isVenus ? 'GOLD ' : isMars ? 'RED ' : isMercury ? 'GREY ' : 'SMALL '
+          {{ isNeptune ? 'DEEP BLUE ' : isUranus ? 'SIDEWAYS ' : isVenus ? 'GOLD ' : isMars ? 'RED ' : isMercury ? 'GREY ' : 'SMALL '
           }}<br />BLOCKS.<br /><span>{{
-            isUranus
+            isNeptune
+              ? 'WINDY WORLD.'
+              : isUranus
               ? 'ICE GIANT.'
               : isJupiter
               ? 'GIANT WORLD.'
@@ -225,7 +243,11 @@ const {
                     : 'BIG WORLD.'
           }}</span>
         </h1>
-        <p v-if="isUranus">
+        <p v-if="isNeptune">
+          Supersonic winds. A storm-dark eye.<br class="desktop-break" />
+          The farthest giant, alive in blue.
+        </p>
+        <p v-else-if="isUranus">
           Methane blue. Rings tipped toward the stars.<br class="desktop-break" />
           An ice giant, rolling through space.
         </p>
@@ -307,7 +329,9 @@ const {
         <span class="orbit-cross">+</span
         ><span>{{ planetName.toUpperCase() }}</span
         ><span class="orbit-line" /><span>{{
-          isUranus
+          isNeptune
+            ? 'THE WINDY PLANET'
+            : isUranus
             ? 'THE SIDEWAYS PLANET'
             : isJupiter
             ? 'THE GAS GIANT'
@@ -339,7 +363,7 @@ const {
         /></label>
         <label for="show-clouds"
           ><component
-            :is="isSaturn || isUranus ? Orbit : isMars ? Wind : isMercury ? Sun : Cloud"
+            :is="isSaturn || isUranus || isNeptune ? Orbit : isMars ? Wind : isMercury ? Sun : Cloud"
             :size="17" /><span>{{ overlayLabel }}</span
           ><WorldSwitch
             id="show-clouds"
@@ -350,7 +374,9 @@ const {
       <div class="biome-picker">
         <div class="biome-caption">
           {{
-            isUranus
+            isNeptune
+              ? 'DARK STORMS, FAINT RINGS'
+              : isUranus
               ? 'PALE CLOUDS, DARK RINGS'
               : isJupiter
               ? 'A WORLD OF SWIRLING CLOUDS'

@@ -1601,3 +1601,110 @@ p {
     width: calc(100% - 48px);
   }
 }
+
+.is-neptune {
+  --primary: #70b7ff;
+  --ring: #70b7ff;
+  --border: #1c3b70;
+  background: #040b1d;
+}
+.is-neptune .topbar,
+.is-neptune .footer {
+  background: #071127;
+}
+.is-neptune .explorer {
+  background: radial-gradient(ellipse at 65% 48%, #164b9c55, transparent 65%);
+}
+.is-neptune.is-night .explorer {
+  background: radial-gradient(ellipse at 65% 48%, #101e4f66, transparent 65%);
+}
+.is-neptune .control-deck {
+  background: #091632;
+}
+.is-neptune .intro-panel h1 span {
+  color: #70b7ff;
+  text-shadow: 3px 4px 0 #173f84;
+}
+.is-neptune .status-dot {
+  background: #70b7ff;
+  box-shadow: 0 0 10px #70b7ff40;
+}
+.is-neptune .eyebrow,
+.is-neptune .explore-note,
+.is-neptune .biome-caption,
+.is-neptune .orbit-cross {
+  color: #72acfa;
+}
+.is-neptune .intro-panel p,
+.is-neptune .settings-group label,
+.is-neptune .world-status strong {
+  color: #a7bfe4;
+}
+.is-neptune .world-coordinate,
+.is-neptune .world-hint,
+.is-neptune .orbit-caption,
+.is-neptune .footer,
+.is-neptune .world-status div > span,
+.is-neptune .biome-caption > span {
+  color: #7793bf;
+}
+.is-neptune .intro-rule {
+  background: #315f9f;
+}
+.is-neptune .hotbar {
+  background: #040c20;
+  border-color: #244e8e;
+  box-shadow: 0 4px 0 #02050d;
+}
+.is-neptune .biome-button {
+  background: linear-gradient(#102c5c, #0b2046);
+}
+.is-neptune .biome-button:hover {
+  background: #173b75;
+  border-color: #528fd9;
+}
+.is-neptune .biome-button.selected {
+  background: #174991;
+  border-color: #70b7ff;
+  box-shadow: inset 0 0 0 1px #70b7ff30;
+}
+.is-neptune .biome-button > span:last-child,
+.is-neptune .orbit-caption > span:nth-child(2) {
+  color: #bfd8fa;
+}
+.is-neptune .time-list {
+  background: #0c2148e6 !important;
+}
+.is-neptune .time-button[data-state='checked'] {
+  background: #1b4f96cc !important;
+  color: #e0eeff !important;
+}
+.is-neptune .world-tools {
+  background: #0c2148cc;
+}
+.is-neptune .world-tools button {
+  color: #b6d7ff;
+}
+.is-neptune .world-tools button:hover {
+  background: #70b7ff15;
+}
+.is-neptune .settings-group [data-slot='switch'][data-state='checked'] {
+  background: #70b7ff;
+}
+.is-neptune .settings-group [data-slot='switch-thumb'][data-state='checked'] {
+  background: #102a5c;
+}
+.is-neptune :focus-visible {
+  outline-color: #70b7ff;
+}
+@media (max-width: 760px) {
+  .is-neptune .earth-canvas {
+    left: 0;
+    right: 0;
+    top: 230px;
+    bottom: 45px;
+  }
+  .is-neptune .intro-panel {
+    width: calc(100% - 48px);
+  }
+}

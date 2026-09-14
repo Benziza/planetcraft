@@ -2,7 +2,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { flushPromises, mount, type VueWrapper } from '@vue/test-utils';
 import App from '../src/App.vue';
 import PlanetPicker from '../src/components/PlanetPicker.vue';
-import { planets } from '../src/data/planets';
 import type { EarthAPI } from '../src/lib/voxel-earth';
 
 const { createEarthMock } = vi.hoisted(() => ({ createEarthMock: vi.fn() }));
@@ -75,15 +74,16 @@ describe('planet navigation', () => {
     expect(document.title).toContain('Mars');
   });
 
-  it('opens a direct Neptune link as a missing world without creating a renderer', async () => {
+  it('opens Neptune directly with a working scene and title', async () => {
     const view = await start('#/neptune');
-    expect(view.get('h1').text()).toContain('404');
-    expect(view.text()).toContain('NOT FOUND');
-    expect(view.get('.planet-picker-value').text()).toBe(
-      planets.find((planet) => planet.id === 'neptune')!.name,
-    );
-    expect(view.find('.earth-canvas').exists()).toBe(false);
-    expect(createEarthMock).not.toHaveBeenCalled();
+    expect(
+      view.find('[aria-label="Interactive Neptune explorer"]').exists(),
+    ).toBe(true);
+    expect(view.get('.planet-picker-value').text()).toBe('Neptune');
+    expect(view.get('main').classes()).toContain('is-neptune');
+    expect(document.title).toBe('Neptune — The Windy Planet | Planetcraft');
+    expect(createEarthMock).toHaveBeenCalledOnce();
+    expect(createEarthMock.mock.calls[0][3]).toBe('neptune');
   });
 
   it('opens Mercury directly and supports terrain, exosphere, and navigation cleanup', async () => {
@@ -237,11 +237,11 @@ describe('planet navigation', () => {
     ).toBe(true);
     expect(view.get('.planet-picker-value').text()).toBe('Uranus');
     expect(view.get('main').classes()).toContain('is-uranus');
-    expect(document.title).toBe(
-      'Uranus — The Sideways Planet | Planetcraft',
-    );
+    expect(document.title).toBe('Uranus — The Sideways Planet | Planetcraft');
     expect(createEarthMock.mock.calls[0][3]).toBe('uranus');
-    await view.get('button[title="Explore Dark narrow rings"]').trigger('click');
+    await view
+      .get('button[title="Explore Dark narrow rings"]')
+      .trigger('click');
     expect(api.focus).toHaveBeenCalledWith(18, 0);
     await view.get('[aria-label="Show rings"]').trigger('click');
     expect(api.setClouds).toHaveBeenLastCalledWith(false);

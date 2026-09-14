@@ -42,6 +42,8 @@ export function usePlanetRoute() {
                   ? 'Saturn — The Ringed Planet | Planetcraft'
                   : planetId.value === 'uranus'
                     ? 'Uranus — The Sideways Planet | Planetcraft'
+                    : planetId.value === 'neptune'
+                      ? 'Neptune — The Windy Planet | Planetcraft'
                   : `${planetName.value} — 404 Not Found | Planetcraft`;
     },
     { immediate: true },
